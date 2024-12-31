@@ -93,7 +93,7 @@ osDirs(){
 	ls -ln $HOME/Projects/$projectName
 	echo -e 'Moving onto the next step.... \n'
 }
-
+## Create Dir structures organized primarily by Penetration Test type
 penDirs(){
 	echo -e ' Organizing the project directory structure by Penetration Test type \n'
 	echo -e ' *All folder structures currently, will be started in the current $HOME/Projects directory. \n'
@@ -200,6 +200,23 @@ createDirs(){
 }
 
 createDirs
+
+## Backup system files before making changes
+backupFiles(){
+	echo -e "Backing up your system files that will be modded by this script... \n"
+	echo -e 'Backing up your .bashrc file \n'
+	#### Make a backup of the .bashrc file
+	cp ~/.bashrc ~/.bashrc.bak
+	echo "Backing up /etc/passwd..."
+	sudo cp /etc/passwd /etc/passwd.bak
+	echo "Backing up /etc/apt/sources.list..."
+	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+	echo "Backing up /etc/ssh/sshd_config...."
+	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+}
+
+backupFiles
+
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	echo -e '-------------------------------Step 3.1------------------------------- \n'
@@ -221,9 +238,6 @@ grabTools(){
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 addTStamp(){
-	echo -e 'Backing up your .bashrc file \n'
-	#### Make a backup of the .bashrc file
-	cp ~/.bashrc ~/.bashrc.bak
 	echo -e 'Adding a Date & Timestamp to your terminal.... \n'
 	#### Customize bash prompt - add Date & Time stamp
 	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
@@ -244,6 +258,10 @@ disablePswd(){
 importKeys(){
 	echo -e "Starting the SSH-Key importing process... \n"
 }
+## Function for importing pre-created project ssh-keys
+genKeyss(){
+	echo -e "Starting to generate the SSH key pair... \n"
+}
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
 	local x
@@ -258,6 +276,8 @@ sshKeysMenu(){
 hardenSSH(){
 	echo -e '------------------------------Step 4----------------------------------- \n'
 	echo -e 'Beginning to harden your machines SSH.... \n'
+	echo -e 'Backing up /etc/sshd/sshd_config...... \n'
+	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 	local enableRoot
 	echo -ne "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)"
 	read enableRoot
