@@ -227,7 +227,7 @@ grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
 	echo -e '-------------------------------Step 4.2------------------------------- \n'
 	echo -e 'Grabbing Tools from GitHub Repos... \n'
-	echo 'Grabbing Linux P.E.A.S..'
+	echo 'Grabbing P.E.A.S..'
 	# From public GitHub
 	curl -L https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
@@ -255,19 +255,24 @@ disablePswd(){
 }
 ## Function for importing pre-created project ssh-keys
 importKeys(){
+	clear
+	echo -e '-------------------------------Step 4.2a------------------------------- \n'
 	echo -e "Starting the SSH-Key importing process... \n"
+	echo -e "This feature is currently a work in progress, you will need to import your keys manually for the time being... \n"
 }
-## Function for importing pre-created project ssh-keys
+## Function for generating new ED25519 SSH key pair storing it in default dir $HOME/.ssh/
 genKeys(){
 	local x
+	echo -e '-------------------------------Step 4.2b------------------------------- \n'
 	echo -e "Starting to generate the SSH key pair... \n"
-	echo "SSH keys will be named "$projectName".pub & "$projectName".priv"
+	echo "SSH keys will be named "$projectName".pub & "$projectName
 	read -p "Enter a comment to add to the keys :" x
 	ssh-keygen -t ed25519 -C '$(x)' -f $HOME'/.ssh/'$projectName
 	ls -ln $HOME/.ssh/
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
+	echo -e '-------------------------------Step 4.2------------------------------- \n'
 	local x
 	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
 
