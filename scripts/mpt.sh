@@ -16,8 +16,8 @@ printf "
 ################################################
 "
 echo " "
-printf "*Your sudo password will be needed at points of this script*"
-read -p "Enter Client/CTF/Project name" projectName
+echo "*Your sudo password will be needed at points of this script*"
+read -p "Enter Project name " projectName
 
 if [ -z "$projectName" ]; then
 	echo "The Project Name can't be left blank"
@@ -30,7 +30,7 @@ fi
 
 ## Backup system files before making changes
 backupFiles(){
-	printf "-------------------------------Step 1-------------------------------"
+	echo "-------------------------------Step 1-------------------------------"
 	printf "Backing up the system files that will be modded by this script..."
 	echo -e 'Backing up your .bashrc file \n'
 	#### Make a backup of the .bashrc file
@@ -46,8 +46,8 @@ backupFiles(){
 backupFiles
 # Step 1 of machine prep system updates
 updateSys() {
-	printf '-------------------------------Step 2-------------------------------'
-    printf ' Bringing the system and all of its files up-to-date....'
+	echo "-------------------------------Step 2-------------------------------"
+    printf " Bringing the system and all of its files up-to-date...."
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
     printf 'Your machine is up-to-date...'
@@ -199,8 +199,8 @@ penDirs(){
 ## Menu function for the directory structure builder
 createDirs(){
 	local dirLayout
-	printf '-------------------------------Step 3-------------------------------'
-	printf "Would you like to organize the project by 
+	echo -e "-------------------------------Step 3------------------------------- \n"
+	echo "Would you like to organize the project by 
 	1) Operating System 
 	2) Pen-test Type 
 	0) Exit
@@ -208,8 +208,8 @@ createDirs(){
 	read dirLayout
 
 	case $dirLayout in
-		1) echo 'Organizing Project '$projectName' by Operating System' osDirs; ;;
-		2) echo 'Organizing Project '$projectName' by Pen-test Type' penDirs; ;;
+		1) echo 'Organizing Project '$projectName' by Operating System' osDirs ;;
+		2) echo 'Organizing Project '$projectName' by Pen-test Type' penDirs ;;
 		3) echo 'Exiting...' exit 0;;
 	esac
 }
@@ -258,17 +258,17 @@ importKeys(){
 	echo -e "Starting the SSH-Key importing process... \n"
 }
 ## Function for importing pre-created project ssh-keys
-genKeyss(){
+genKeys(){
 	echo -e "Starting to generate the SSH key pair... \n"
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
 	local x
-	read -p "Do you have pre-created SSH Keys to import? (y/n)" $x
+	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
 
 	case $x in
-		'y' ) echo "Importing SSH Keys..." importKeys; ;;
-		'n' ) echo 'Generating the SSH Key Pair for '$USER genKeys; ;;
+		'y' ) echo "Importing SSH Keys..."  importKeys;;
+		'n' ) echo 'Generating the SSH Key Pair for '$USER genKeys;;
 	esac
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
@@ -280,9 +280,9 @@ hardenSSH(){
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
 		n )
-		echo 'root SSH will be disabled' disableRoot; ;;
+		echo 'root SSH will be disabled' disableRoot ;;
 		N)
-		echo 'root SSH will be disabled' disableRoot; ;;
+		echo 'root SSH will be disabled' disableRoot ;;
 		y )
 		echo 'root SSH will be enabled'	;;
 		Y)
@@ -297,9 +297,9 @@ hardenSSH(){
 		N)
 		echo '2FA SSH security will be disabled' ;;
 		y )
-		echo '2FA SSH security will be enabled' enable2factor;	;;
+		echo '2FA SSH security will be enabled' enable2factor;;
 		Y)
-		echo '2FA SSH security will be enabled' enable2factor;	;;
+		echo '2FA SSH security will be enabled' enable2factor;;
 	esac
 	sshKeysMenu
 }
