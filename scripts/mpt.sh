@@ -47,10 +47,10 @@ backupFiles
 # Step 1 of machine prep system updates
 updateSys() {
 	echo "-------------------------------Step 2-------------------------------"
-    printf " Bringing the system and all of its files up-to-date...."
+    echo " Bringing the system and all of its files up-to-date...."
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
-    printf 'Your machine is up-to-date...'
+    echo 'Your machine is up-to-date...'
 }
 
 updateSys
@@ -208,9 +208,9 @@ createDirs(){
 	read dirLayout
 
 	case $dirLayout in
-		1) echo 'Organizing Project '$projectName' by Operating System' osDirs ;;
-		2) echo 'Organizing Project '$projectName' by Pen-test Type' penDirs ;;
-		3) echo 'Exiting...' exit 0;;
+		1) echo 'Organizing Project '$projectName' by Operating System'; osDirs ;;
+		2) echo 'Organizing Project '$projectName' by Pen-test Type'; penDirs ;;
+		3) echo 'Exiting...'; exit 0;;
 	esac
 }
 
@@ -267,8 +267,8 @@ sshKeysMenu(){
 	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
 
 	case $x in
-		'y' ) echo "Importing SSH Keys..."  importKeys;;
-		'n' ) echo 'Generating the SSH Key Pair for '$USER genKeys;;
+		'y' ) echo "Importing SSH Keys...";  importKeys;;
+		'n' ) echo 'Generating the SSH Key Pair for '$USER; genKeys;;
 	esac
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
@@ -280,9 +280,9 @@ hardenSSH(){
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
 		n )
-		echo 'root SSH will be disabled' disableRoot ;;
+		echo 'root SSH will be disabled'; disableRoot ;;
 		N)
-		echo 'root SSH will be disabled' disableRoot ;;
+		echo 'root SSH will be disabled'; disableRoot ;;
 		y )
 		echo 'root SSH will be enabled'	;;
 		Y)
@@ -297,9 +297,9 @@ hardenSSH(){
 		N)
 		echo '2FA SSH security will be disabled' ;;
 		y )
-		echo '2FA SSH security will be enabled' enable2factor;;
+		echo '2FA SSH security will be enabled'; enable2factor;;
 		Y)
-		echo '2FA SSH security will be enabled' enable2factor;;
+		echo '2FA SSH security will be enabled'; enable2factor;;
 	esac
 	sshKeysMenu
 }
