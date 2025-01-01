@@ -29,9 +29,25 @@ else
 	echo -e 'The '$projectName' attack machine is being prepped.... \n'
 fi
 
+## Backup system files before making changes
+backupFiles(){
+	echo -e '-------------------------------Step 1------------------------------- \n'
+	echo -e "Backing up the system files that will be modded by this script... \n"
+	echo -e 'Backing up your .bashrc file \n'
+	#### Make a backup of the .bashrc file
+	cp ~/.bashrc ~/.bashrc.bak
+	echo "Backing up /etc/passwd..."
+	sudo cp /etc/passwd /etc/passwd.bak
+	echo "Backing up /etc/apt/sources.list..."
+	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+	echo "Backing up /etc/ssh/sshd_config...."
+	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+	echo -e " backup complete....."
+}
+backupFiles
 # Step 1 of machine prep system updates
 updateSys() {
-	echo '-------------------------------Step 1-------------------------------'
+	echo '-------------------------------Step 2-------------------------------'
     echo ' Bringing the system and all of its files up-to-date....'
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
@@ -184,7 +200,7 @@ penDirs(){
 ## Menu function for the directory structure builder
 createDirs(){
 	local dirLayout
-	echo '-------------------------------Step 2-------------------------------'
+	echo '-------------------------------Step 3-------------------------------'
 	echo "Would you like to organize the project by 
 	1) Operating System 
 	2) Pen-test Type 
@@ -201,32 +217,16 @@ createDirs(){
 
 createDirs
 
-## Backup system files before making changes
-backupFiles(){
-	echo -e "Backing up your system files that will be modded by this script... \n"
-	echo -e 'Backing up your .bashrc file \n'
-	#### Make a backup of the .bashrc file
-	cp ~/.bashrc ~/.bashrc.bak
-	echo "Backing up /etc/passwd..."
-	sudo cp /etc/passwd /etc/passwd.bak
-	echo "Backing up /etc/apt/sources.list..."
-	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-	echo "Backing up /etc/ssh/sshd_config...."
-	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-}
-
-backupFiles
-
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
-	echo -e '-------------------------------Step 3.1------------------------------- \n'
+	echo -e '-------------------------------Step 4.1------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
 	sudo apt install $(cat tools.list | tr "\n" " ") -y
 }
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
-	echo -e '-------------------------------Step 3.2------------------------------- \n'
+	echo -e '-------------------------------Step 4.2------------------------------- \n'
 	echo -e 'Grabbing Tools from GitHub Repos... \n'
 	echo 'Grabbing Linux P.E.A.S..'
 	# From public GitHub
