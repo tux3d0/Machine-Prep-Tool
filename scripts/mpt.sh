@@ -15,10 +15,9 @@ printf "
 #                                              #
 ################################################
 "
-echo -e '\n'
-echo -e "*Your sudo password will be needed at points of this script*\n"
-echo "Enter Client/CTF/Project name"
-read projectName
+echo " "
+printf "*Your sudo password will be needed at points of this script*"
+read -p "Enter Client/CTF/Project name" projectName
 
 if [ -z "$projectName" ]; then
 	echo "The Project Name can't be left blank"
@@ -31,8 +30,8 @@ fi
 
 ## Backup system files before making changes
 backupFiles(){
-	echo -e '-------------------------------Step 1------------------------------- \n'
-	echo -e "Backing up the system files that will be modded by this script... \n"
+	printf "-------------------------------Step 1-------------------------------"
+	printf "Backing up the system files that will be modded by this script..."
 	echo -e 'Backing up your .bashrc file \n'
 	#### Make a backup of the .bashrc file
 	cp ~/.bashrc ~/.bashrc.bak
@@ -47,11 +46,11 @@ backupFiles(){
 backupFiles
 # Step 1 of machine prep system updates
 updateSys() {
-	echo '-------------------------------Step 2-------------------------------'
-    echo ' Bringing the system and all of its files up-to-date....'
+	printf '-------------------------------Step 2-------------------------------'
+    printf ' Bringing the system and all of its files up-to-date....'
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
-    echo 'Your machine is up-to-date...'
+    printf 'Your machine is up-to-date...'
 }
 
 updateSys
@@ -200,8 +199,8 @@ penDirs(){
 ## Menu function for the directory structure builder
 createDirs(){
 	local dirLayout
-	echo '-------------------------------Step 3-------------------------------'
-	echo "Would you like to organize the project by 
+	printf '-------------------------------Step 3-------------------------------'
+	printf "Would you like to organize the project by 
 	1) Operating System 
 	2) Pen-test Type 
 	0) Exit
@@ -276,11 +275,9 @@ sshKeysMenu(){
 hardenSSH(){
 	echo -e '------------------------------Step 4----------------------------------- \n'
 	echo -e 'Beginning to harden your machines SSH.... \n'
-	echo -e 'Backing up /etc/sshd/sshd_config...... \n'
-	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
 	local enableRoot
-	echo -ne "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)"
-	read enableRoot
+	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
 		n )
 		echo 'root SSH will be disabled' disableRoot; ;;
@@ -291,9 +288,9 @@ hardenSSH(){
 		Y)
 		echo 'root SSH will be enabled'	;;
 	esac
+
 	local enable2fa
-	echo -ne "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )"
-	read enable2fa
+	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" enable2fa
 	case $enable2fa in
 		n )
 		echo '2FA SSH security will be disabled' ;;
