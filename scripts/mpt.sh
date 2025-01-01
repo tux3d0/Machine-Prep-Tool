@@ -259,7 +259,12 @@ importKeys(){
 }
 ## Function for importing pre-created project ssh-keys
 genKeys(){
+	local x
 	echo -e "Starting to generate the SSH key pair... \n"
+	echo "SSH keys will be named "$projectName".pub & "$projectName".priv"
+	read -p "Enter a comment to add to the keys :" x
+	ssh-keygen -t ed25519 -C '$(x)' -f $HOME'/.ssh/'$projectName
+	ls -ln $HOME/.ssh/
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
