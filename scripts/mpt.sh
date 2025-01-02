@@ -221,7 +221,7 @@ createDirs(){
 installTools(){
 	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
-	sudo apt install $(cat tools.list | tr "\n" " ") -y
+	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
 }
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
