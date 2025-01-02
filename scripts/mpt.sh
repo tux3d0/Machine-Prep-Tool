@@ -252,6 +252,16 @@ termLog(){
 	script $HOME/Projects/$projectName/Logs/$x
 }
 
+createSU(){
+	echo ' Creating Super User account....'
+	read -p 'Enter username : ' supUser
+	sudo adduser "$supUser"
+	echo "Adding $supUser to sudoers group..."
+	sudo usermod -aG sudo "$supUser"
+	# Ensure superuser can perform administrative tasks
+	echo "$username ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$username
+}
+
 ## Disable remote root account access
 disableRoot(){
 	echo -e '------------------------------Step 4.1----------------------------------- \n'
