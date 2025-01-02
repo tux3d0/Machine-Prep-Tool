@@ -219,14 +219,16 @@ createDirs(){
 
 ## Download , Install , & configure The GoLang programming Language. 
 installGo(){
-## Pull Go directly from the site
-wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
-## Remove any previous versions of Go and extracts the newly downloaded file
-sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-source $HOME/.profile
-## prints Go version to confirm installation
-go version
+	## Pull Go directly from the site
+	wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+	## Remove any previous versions of Go and extracts the newly downloaded file
+	sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
+	export PATH=$PATH:/usr/local/go/bin
+	export GOPATH=$HOME/go
+	export PATH=$PATH:$GOPATH/bin
+	source ~/.profile
+	## prints Go version to confirm installation
+	go version
 }
 
 ## Download & install PowerShell 7.x
