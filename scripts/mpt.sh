@@ -222,6 +222,8 @@ installTools(){
 	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
 	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
+	echo 'Installing Python module impacket...'
+	python3 -m pipx install impacket
 }
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
@@ -233,8 +235,12 @@ grabTools(){
 	git clone https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
 	git clone https://github.com/digininja/CeWL.git 
-	echo 'Installing Python module impacket...'
-	python3 -m pipx install impacket
+	#
+	#
+	## save installing Sliver C2 for last
+	echo -e 'Grabbing & Installing Sliver C2 as a service.... \N'
+	curl https://sliver.sh/install|sudo bash
+
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 termLog(){
