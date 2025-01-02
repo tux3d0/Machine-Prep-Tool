@@ -41,8 +41,6 @@ backupFiles(){
 	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 	echo "Backing up /etc/ssh/sshd_config...."
 	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-	echo "Backing up /etc/securetty...."
-	sudo cp /etc/securetty /etc/securetty.bak
 	echo -e " backup complete..... \n"
 }
 
@@ -263,12 +261,14 @@ disableRoot(){
 
 	# Disable SSH root login
 	echo 'Disabling Root SSH login...'
-	sudo sed -i "s/PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
+	sudo sed -i "s/#PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
 	sudo systemctl restart sshd
 
 	# Restrict root access via PAM
 	echo -e 'Restricting root access via PAM... \n'
 	sudo touch /etc/securetty
+	echo "Backing up /etc/securetty...."
+	sudo cp /etc/securetty /etc/securetty.bak
 	sudo chmod 600 /etc/securetty
 	sudo chmod 600 /etc/securetty.bak
 }
@@ -315,8 +315,6 @@ disablePswd(){
 	# Disable SSH password authentication login
 	echo 'Disabling password authentication...'
 	sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-	echo 'Enabling Pubkey based Authentication...'
-	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
 	echo 'Restarting sshd service....'
 	sudo systemctl restart sshd
 }
