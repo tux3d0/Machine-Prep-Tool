@@ -263,7 +263,7 @@ disableRoot(){
 
 	# Disable SSH root login
 	echo 'Disabling Root SSH login...'
-	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config
+	sudo sed -i "s/PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
 	sudo systemctl restart sshd
 
 	# Restrict root access via PAM
@@ -316,7 +316,7 @@ disablePswd(){
 	echo 'Disabling password authentication...'
 	sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
 	echo 'Enabling Pubkey based Authentication...'
-	sudo sed -i "s/#PubkeyAuthentication no/PubkeyAuthentication yes/" /etc/ssh/sshd_config
+	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
 	echo 'Restarting sshd service....'
 	sudo systemctl restart sshd
 }
@@ -358,6 +358,9 @@ hardenSSH(){
 	sudo sed -i "s/#LogLevel INFO/LogLevel INFO/" /etc/ssh/sshd_config
 	echo 'Setting max sessions to 5...'
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
+	echo 'Enabling Pubkey based Authentication...'
+	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
+	echo 'Restarting sshd service....'
 
 	local enableRoot
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
