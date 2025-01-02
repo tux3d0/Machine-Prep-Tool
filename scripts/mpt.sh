@@ -203,6 +203,7 @@ penDirs(){
 }
 ## Menu function for the directory structure builder
 createDirs(){
+	clear
 	local dirLayout
 	echo -e "-------------------------------Step 3------------------------------- \n"
 	echo "Would you like to organize the project by 
@@ -249,22 +250,12 @@ termLog(){
 	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
 	local x="$timestamp"_"$projectName.log"
 	echo -e "Starting to log all commands entered into this terminal session.... \n"
+	echo -e "Storing log in: $HOME/Projects/$projectName/Logs/$x"
 	script $HOME/Projects/$projectName/Logs/$x
 }
-
-createSU(){
-	echo ' Creating Super User account....'
-	read -p 'Enter username : ' supUser
-	sudo adduser "$supUser"
-	echo "Adding $supUser to sudoers group..."
-	sudo usermod -aG sudo "$supUser"
-	# Ensure superuser can perform administrative tasks
-	echo "$username ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$username
-}
-
-## Disable remote root account access
+## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
-	echo -e '------------------------------Step 4.1----------------------------------- \n'
+	echo -e '------------------------------Step 4.2----------------------------------- \n'
 	echo -e 'Disabling SSH access & Restricting TTY access and locking down PAM for the root user. \n'
 	# Disable root login
 	echo 'Disabling the root account...locking password'
@@ -281,27 +272,65 @@ disableRoot(){
 	sudo chmod 600 /etc/securetty
 	sudo chmod 600 /etc/securetty.bak
 }
+## Create a super user account before disabling root account
+createSU(){
+	echo -e '------------------------------Step 4.1a----------------------------------- \n'
+	echo ' Creating Super User account....'
+	read -p 'Enter username : ' supUser
+	sudo adduser "$supUser"
+	echo "Adding $supUser to sudoers group..."
+	sudo usermod -aG sudo "$supUser"
+	# Ensure superuser can perform administrative tasks
+	echo "$supUser ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$supUser
+	echo -e "Disabling root user account...."
+	disableRoot
+}
+## menu function for deciding whether to create a new superuser account or not
+suMenu(){
+	clear
+	local x
+	echo -e '------------------------------Step 4.1----------------------------------- \n'
+	echo "Have you already created a superuser account? y/n :"
+	read x 
+
+	case $x in
+		y) echo "Disabling root account...."; disableRoot;;
+		n) echo "Creating a new superuser account before moving forward...."; createSU;;
+		*) echo "Incorrect option....y/n?"; suMenu;;
+	esac
+}
+
 ## Enable SSH 2FA 
 enable2factor(){
-	echo -e '------------------------------Step 4.2----------------------------------- \n'
+	echo -e '------------------------------Step 4.3----------------------------------- \n'
 	echo -e ' Enable 2FA SSH security using the Google API & Google Authenticator \n'
+	echo 'Un-commenting and enabling 2FA/PAM settings in your sshd_config file...'
+	sudo sed -i "s/#KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config
+	sudo sed -i "s/UsePAM no/UsePAM yes/" /etc/ssh/sshd_config
 }
 ## Disables the ability to SSH in using only a password
 disablePswd(){
-	echo -e '------------------------------Step 4.4----------------------------------- \n'
+	echo -e '------------------------------Step 4.5----------------------------------- \n'
 	echo -e ' Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled... \n'
+	# Disable SSH password authentication login
+	echo 'Disabling password authentication...'
+	sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+	echo 'Enabling Pubkey based Authentication...'
+	sudo sed -i "s/#PubkeyAuthentication no/PubkeyAuthentication yes/" /etc/ssh/sshd_config
+	echo 'Restarting sshd service....'
+	sudo systemctl restart sshd
 }
 ## Function for importing pre-created project ssh-keys
 importKeys(){
 	clear
-	echo -e '-------------------------------Step 4.3a------------------------------- \n'
+	echo -e '-------------------------------Step 4.4a------------------------------- \n'
 	echo -e "Starting the SSH-Key importing process... \n"
 	echo -e "This feature is currently a work in progress, you will need to import your keys manually for the time being... \n"
 }
 ## Function for generating new ED25519 SSH key pair storing it in default dir $HOME/.ssh/
 genKeys(){
 	local x
-	echo -e '-------------------------------Step 4.3b------------------------------- \n'
+	echo -e '-------------------------------Step 4.4b------------------------------- \n'
 	echo -e "Starting to generate the SSH key pair... \n"
 	echo "SSH keys will be named "$projectName".pub & "$projectName
 	read -p "Enter a comment to add to the keys :" x
@@ -310,7 +339,8 @@ genKeys(){
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	echo -e '-------------------------------Step 4.3------------------------------- \n'
+	clear
+	echo -e '-------------------------------Step 4.4------------------------------- \n'
 	local x
 	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
 
@@ -321,38 +351,54 @@ sshKeysMenu(){
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
 hardenSSH(){
+	clear
 	echo -e '------------------------------Step 4----------------------------------- \n'
 	echo -e 'Beginning to harden your machines SSH.... \n'
+	echo 'Enabling SSH logging and setting log level to INFO'
+	sudo sed -i "s/#LogLevel INFO/LogLevel INFO/" /etc/ssh/sshd_config
+	echo 'Setting max sessions to 5...'
+	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
 
 	local enableRoot
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
 		n )
-		echo 'root SSH will be disabled'; disableRoot ;;
+		echo 'root SSH will be disabled'; suMenu ;;
 		N)
-		echo 'root SSH will be disabled'; disableRoot ;;
+		echo 'root SSH will be disabled'; suMenu ;;
 		y )
 		echo 'root SSH will be enabled'	;;
 		Y)
 		echo 'root SSH will be enabled'	;;
+		* ) echo 'root SSH will be disabled'; suMenu ;;
 	esac
-
+## enable 2FA menu
 	local enable2fa
 	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" enable2fa
 	case $enable2fa in
 		n )
-		echo '2FA SSH security will be disabled' ;;
+		echo '2FA SSH security will remain disabled' ;;
 		N)
-		echo '2FA SSH security will be disabled' ;;
+		echo '2FA SSH security will remain disabled' ;;
 		y )
 		echo '2FA SSH security will be enabled'; enable2factor;;
 		Y)
 		echo '2FA SSH security will be enabled'; enable2factor;;
 	esac
+	##calls the menu for generating or importing ssh keys
 	sshKeysMenu
+## menu for disabling password auth or leaving it enabled with key-based 
+	local p
+	read -p "Would you like to disable password authentication ?....y/n :" p
+	case $p in
+		y ) disablePswd;;
+		n ) echo "Leaving password enabled + key based authentication......";;
+	esac
+	sudo systemctl restart sshd
 }
 backupFiles
 updateSys
 createDirs
 hardenSSH
+#installTools
 termLog
