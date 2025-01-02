@@ -4,7 +4,7 @@
 # Description: A tool used for automating the machine prep process 
 # for Red Teams & Bounty Hunters.
 # License: n/a
-
+clear
 printf "
 ################################################
 #                                              #
@@ -66,6 +66,8 @@ osDirs(){
 	mkdir $HOME/Projects/$projectName/Reporting
 	echo 'Creating the '$HOME/Projects/$projectName/Results 'directory'
 	mkdir $HOME/Projects/$projectName/Results
+	echo 'Creating the '$HOME/Projects/$projectName/Logs 'directory'
+	mkdir $HOME/Projects/$projectName/Logs
 	echo 'Creating the '$HOME/Projects/$projectName/Linux 'directory'
 	mkdir $HOME/Projects/$projectName/Linux
 	echo 'Creating the '$HOME/Projects/$projectName/Linux/'Information-Gathering  directory'
@@ -190,6 +192,8 @@ penDirs(){
 	mkdir $HOME/Projects/$projectName/Reporting
 	echo 'Creating the '$HOME/Projects/$projectName/Results 'directory'
 	mkdir $HOME/Projects/$projectName/Results
+	echo 'Creating the '$HOME/Projects/$projectName/Logs 'directory'
+	mkdir $HOME/Projects/$projectName/Logs
 	echo -e '\n'
 	echo 'The '$projectName' Folder structure is complete'
 	echo $HOME/Projects/$projectName
@@ -218,14 +222,14 @@ createDirs
 
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
-	echo -e '-------------------------------Step 4.1------------------------------- \n'
+	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
 	sudo apt install $(cat tools.list | tr "\n" " ") -y
 }
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
-	echo -e '-------------------------------Step 4.2------------------------------- \n'
+	echo -e '-------------------------------Step 5.2------------------------------- \n'
 	echo -e 'Grabbing Tools from GitHub Repos... \n'
 	echo 'Grabbing P.E.A.S..'
 	# From public GitHub
@@ -236,34 +240,46 @@ grabTools(){
 	python3 -m pipx install impacket
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
-addTStamp(){
+termLog(){
+	local timestamp=$(date +%T)_$(date +%D)
+	echo -e '------------------------------Step 6----------------------------------- \n'
+	echo 'Enabling Terminal logging, commands entered will be stored in a log file with timestamps.'
+	echo -e ' Useful for Proof of Concepts and other reporting and liability aspects \n'
 	echo -e 'Adding a Date & Timestamp to your terminal.... \n'
 	#### Customize bash prompt - add Date & Time stamp
-	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
+	#echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
+	local x="$timestamp"_"$projectName.log"
+	echo -e "Starting to log all commands entered into this terminal session.... \n"
+	script $HOME/Projects/$projectName/Logs/$x
+	ls -ln $HOME/Projects/$projectName/Logs/
 }
+termLog
 ## Disable remote root account access
 disableRoot(){
+	echo -e '------------------------------Step 4.1----------------------------------- \n'
 	echo -e 'Disabling SSH access for the root user. \n'
 }
 ## Enable SSH 2FA 
 enable2factor(){
+	echo -e '------------------------------Step 4.2----------------------------------- \n'
 	echo -e ' Enable 2FA SSH security using the Google API & Google Authenticator \n'
 }
 ## Disables the ability to SSH in using only a password
 disablePswd(){
+	echo -e '------------------------------Step 4.4----------------------------------- \n'
 	echo -e ' Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled... \n'
 }
 ## Function for importing pre-created project ssh-keys
 importKeys(){
 	clear
-	echo -e '-------------------------------Step 4.2a------------------------------- \n'
+	echo -e '-------------------------------Step 4.3a------------------------------- \n'
 	echo -e "Starting the SSH-Key importing process... \n"
 	echo -e "This feature is currently a work in progress, you will need to import your keys manually for the time being... \n"
 }
 ## Function for generating new ED25519 SSH key pair storing it in default dir $HOME/.ssh/
 genKeys(){
 	local x
-	echo -e '-------------------------------Step 4.2b------------------------------- \n'
+	echo -e '-------------------------------Step 4.3b------------------------------- \n'
 	echo -e "Starting to generate the SSH key pair... \n"
 	echo "SSH keys will be named "$projectName".pub & "$projectName
 	read -p "Enter a comment to add to the keys :" x
@@ -272,7 +288,7 @@ genKeys(){
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	echo -e '-------------------------------Step 4.2------------------------------- \n'
+	echo -e '-------------------------------Step 4.3------------------------------- \n'
 	local x
 	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
 
