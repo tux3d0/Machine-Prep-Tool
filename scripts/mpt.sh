@@ -217,50 +217,84 @@ createDirs(){
 	esac
 }
 
-## automatically installs tools from the tools.list file that will be needed for this project
-installTools(){
-	echo -e '-------------------------------Step 5.1------------------------------- \n'
-	echo -e 'Installing Tools from your APT list... \n'
-	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
-	## Install Powershell 7.x
+## Download , Install , & configure The GoLang programming Language. 
+installGo(){
+## Pull Go directly from the site
+wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+## Remove any previous versions of Go and extracts the newly downloaded file
+sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+source $HOME/.profile
+## prints Go version to confirm installation
+go version
+}
+
+## Download & install PowerShell 7.x
+installPowShell(){
 	echo -e 'Downloading and Installing PowerShell 7.x........ \n'
 	# Install pre-requisite packages.
 	sudo apt-get install -y wget
-
 	# Download the PowerShell package file
 	wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.6/powershell_7.4.6-1.deb_amd64.deb
-
-	###################################
 	# Install the PowerShell package
 	sudo dpkg -i powershell_7.4.6-1.deb_amd64.deb
 	# Resolve missing dependencies and finish the install (if necessary)
 	sudo apt-get install -f
 	# Delete the downloaded package file
 	rm powershell_7.4.6-1.deb_amd64.deb
-## Installing Rust
+	echo -e "PowerShell Installation complete"
+}
+## Downloading & Installing the Rust programming language. 
+installRust(){
 	echo "Downloading and Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	
+}
+## automatically installs tools from the tools.list file that will be needed for this project
+installTools(){
+	echo -e '-------------------------------Step 5.1------------------------------- \n'
+	echo -e 'Installing Tools from your APT list... \n'
+	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
+	## Install Powershell 7.x
+	installPowShell
+	installRust
+	installGo
 }
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
 	echo -e '-------------------------------Step 5.2------------------------------- \n'
+	echo 'Creating $(HOME)/Tools'
+	mkdir $HOME/Tools
+	cd $HOME/Tools
 	echo -e 'Grabbing Tools from GitHub Repos, you will still need to build some of these packages... \n'
 	echo 'Grabbing P.E.A.S..'
 	# From public GitHub
 	git clone https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
 	git clone https://github.com/digininja/CeWL.git 
-	echo -e 'Grabbing gHidra from GitHub....'
+	echo -e 'Grabbing gHidra from GitHub.... \n'
 	git clone https://github.com/NationalSecurityAgency/ghidra.git
-	echo -e 'Grabbing MADCert from GitHub....'
+	echo -e 'Grabbing MADCert from GitHub.... \n'
 	git clone https://github.com/NationalSecurityAgency/MADCert.git
-	echo -e 'Grabbing osmedeus a recon automation framework.....'
+	echo -e 'Grabbing osmedeus a recon automation framework..... \n'
 	git clone https://github.com/j3ssie/osmedeus.git
-	echo -e 'Grabbing nmapAutomator from GitHub.....'
-	git clone 
+	echo -e 'Grabbing moonwalk system wiper from GitHub..... \n'
+	git clone https://github.com/mufeedvh/moonwalk.git
+	cd moonwalk/
+	cargo build --release
+	cd ../
+	echo -e 'Grabbing nmapAutomator from GitHub...... \n'
+	git clone https://github.com/21y4d/nmapAutomator.git
+	echo -e 'Grabbing PowerShell-RAT from GitHub....... \n'
+	git clone git clone https://github.com/Viralmaniar/Powershell-RAT
+	echo -e 'Grabbing and Installing ReconFlow from GitHub...... \n'
+	git clone https://github.com/six2dez/reconftw
+	cd reconftw/
+	./install.sh
+	cd ../
 
 	#
 	#
