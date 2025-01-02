@@ -230,9 +230,9 @@ grabTools(){
 	echo -e 'Grabbing Tools from GitHub Repos... \n'
 	echo 'Grabbing P.E.A.S..'
 	# From public GitHub
-	curl -L https://github.com/peass-ng/PEASS-ng.git
+	git clone https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
-	curl -L https://github.com/digininja/CeWL.git 
+	git clone https://github.com/digininja/CeWL.git 
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
 }
