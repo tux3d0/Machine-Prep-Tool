@@ -197,21 +197,20 @@ penDirs(){
 	echo 'The '$projectName' Folder structure is complete'
 	echo $HOME/Projects/$projectName
 	ls -ln $HOME/Projects/$projectName
-	echo -e 'Moving onto the next step.... \n'
+	echo -e 'Moving onto creating your project directory structure.... \n'
 }
 ## Menu function for the directory structure builder
 createDirs(){
-	clear
-	local dirLayout
+	local x
 	echo -e "-------------------------------Step 3------------------------------- \n"
 	echo "Would you like to organize the project by 
 	1) Operating System 
 	2) Pen-test Type 
 	0) Exit
 	"
-	read dirLayout
+	read x
 
-	case $dirLayout in
+	case $x in
 		1) echo 'Organizing Project '$projectName' by Operating System'; osDirs ;;
 		2) echo 'Organizing Project '$projectName' by Pen-test Type'; penDirs ;;
 		3) echo 'Exiting...'; exit 0;;
@@ -258,6 +257,7 @@ disableRoot(){
 	# Disable root login
 	echo 'Disabling the root account...locking password'
 	sudo passwd -l root
+	# sudo sed -i "s/root:x:0:0:root"
 
 	# Disable SSH root login
 	echo 'Disabling Root SSH login...'
