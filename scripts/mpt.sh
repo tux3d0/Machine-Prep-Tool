@@ -41,9 +41,11 @@ backupFiles(){
 	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 	echo "Backing up /etc/ssh/sshd_config...."
 	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-	echo -e " backup complete....."
+	echo "Backing up /etc/securetty...."
+	sudo cp /etc/securetty /etc/securetty.bak
+	echo -e " backup complete..... \n"
 }
-backupFiles
+
 # Step 1 of machine prep system updates
 updateSys() {
 	echo "-------------------------------Step 2-------------------------------"
@@ -53,7 +55,6 @@ updateSys() {
     echo 'Your machine is up-to-date...'
 }
 
-updateSys
 ## Creates Dir structure organized primarily by O.S type
 osDirs(){
 	echo ' Organizing the project directory structure by OS '
@@ -218,8 +219,6 @@ createDirs(){
 	esac
 }
 
-createDirs
-
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	echo -e '-------------------------------Step 5.1------------------------------- \n'
@@ -241,23 +240,36 @@ grabTools(){
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 termLog(){
-	local timestamp=$(date +%T)_$(date +%D)
+	local timestamp=$(date +%s)
 	echo -e '------------------------------Step 6----------------------------------- \n'
 	echo 'Enabling Terminal logging, commands entered will be stored in a log file with timestamps.'
 	echo -e ' Useful for Proof of Concepts and other reporting and liability aspects \n'
 	echo -e 'Adding a Date & Timestamp to your terminal.... \n'
 	#### Customize bash prompt - add Date & Time stamp
-	#echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
+	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
 	local x="$timestamp"_"$projectName.log"
 	echo -e "Starting to log all commands entered into this terminal session.... \n"
 	script $HOME/Projects/$projectName/Logs/$x
-	ls -ln $HOME/Projects/$projectName/Logs/
 }
-termLog
+
 ## Disable remote root account access
 disableRoot(){
 	echo -e '------------------------------Step 4.1----------------------------------- \n'
-	echo -e 'Disabling SSH access for the root user. \n'
+	echo -e 'Disabling SSH access & Restricting TTY access and locking down PAM for the root user. \n'
+	# Disable root login
+	echo 'Disabling the root account...locking password'
+	sudo passwd -l root
+
+	# Disable SSH root login
+	echo 'Disabling Root SSH login...'
+	sudo sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config
+	sudo systemctl restart sshd
+
+	# Restrict root access via PAM
+	echo -e 'Restricting root access via PAM... \n'
+	sudo touch /etc/securetty
+	sudo chmod 600 /etc/securetty
+	sudo chmod 600 /etc/securetty.bak
 }
 ## Enable SSH 2FA 
 enable2factor(){
@@ -329,5 +341,8 @@ hardenSSH(){
 	esac
 	sshKeysMenu
 }
-
+backupFiles
+updateSys
+createDirs
 hardenSSH
+termLog
