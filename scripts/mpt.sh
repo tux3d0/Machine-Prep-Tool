@@ -222,6 +222,24 @@ installTools(){
 	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
 	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
+	## Install Powershell 7.x
+	echo -e 'Downloading and Installing PowerShell 7.x........ \n'
+	# Install pre-requisite packages.
+	sudo apt-get install -y wget
+
+	# Download the PowerShell package file
+	wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.6/powershell_7.4.6-1.deb_amd64.deb
+
+	###################################
+	# Install the PowerShell package
+	sudo dpkg -i powershell_7.4.6-1.deb_amd64.deb
+	# Resolve missing dependencies and finish the install (if necessary)
+	sudo apt-get install -f
+	# Delete the downloaded package file
+	rm powershell_7.4.6-1.deb_amd64.deb
+## Installing Rust
+	echo "Downloading and Installing Rust..."
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
 }
@@ -229,12 +247,21 @@ installTools(){
 grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
 	echo -e '-------------------------------Step 5.2------------------------------- \n'
-	echo -e 'Grabbing Tools from GitHub Repos... \n'
+	echo -e 'Grabbing Tools from GitHub Repos, you will still need to build some of these packages... \n'
 	echo 'Grabbing P.E.A.S..'
 	# From public GitHub
 	git clone https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
 	git clone https://github.com/digininja/CeWL.git 
+	echo -e 'Grabbing gHidra from GitHub....'
+	git clone https://github.com/NationalSecurityAgency/ghidra.git
+	echo -e 'Grabbing MADCert from GitHub....'
+	git clone https://github.com/NationalSecurityAgency/MADCert.git
+	echo -e 'Grabbing osmedeus a recon automation framework.....'
+	git clone https://github.com/j3ssie/osmedeus.git
+	echo -e 'Grabbing nmapAutomator from GitHub.....'
+	git clone 
+
 	#
 	#
 	## save installing Sliver C2 for last
