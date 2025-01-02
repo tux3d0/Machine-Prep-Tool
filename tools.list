@@ -33,3 +33,5 @@ vim
 tmux
 tor
 openvpn
+pipx
+wget
