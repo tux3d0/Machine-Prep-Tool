@@ -1,0 +1,12 @@
+openssh-server
+git
+python3
+python2.7
+pipx
+wget
+curl
+ruby
+vim
+tmux
+tor
+openvpn
