@@ -255,7 +255,7 @@ installRust(){
 installTools(){
 	echo -e '-------------------------------Step 5------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
-	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
+	sudo apt install $(cat ./tools.list | tr "\n" " ") -y
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
 	## Install Powershell 7.x
