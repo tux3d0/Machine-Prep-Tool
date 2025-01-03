@@ -51,6 +51,8 @@ updateSys() {
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
     echo 'Your machine is up-to-date...'
+    echo 'Now We are installing some programming languages and other required services'
+    sudo apt install $(cat reqs.list | tr "\n" " ") -y
 }
 
 ## Creates Dir structure organized primarily by O.S type
@@ -250,8 +252,8 @@ installRust(){
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	echo -e '-------------------------------Step 5------------------------------- \n'
-	echo -e 'Installing Tools from your APT list... \n'
-	sudo apt install $(cat ./tools.list | tr "\n" " ") -y
+	echo -e 'Installing Tools from your APT tools.list... \n'
+	sudo apt install $(cat tools.list | tr "\n" " ") -y
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
 	## Install Powershell 7.x
