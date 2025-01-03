@@ -1,3 +1,4 @@
+openssh-server
 ruby
 burpsuite
 netcat
@@ -10,6 +11,7 @@ ffuf
 gobuster
 hydra
 zaproxy
+privoxy
 proxychains
 sqlmap
 radare2
