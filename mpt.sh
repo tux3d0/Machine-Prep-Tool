@@ -260,7 +260,7 @@ installTools(){
 	installGo
 }
 ## Clones Repos from GitHub & installs python modules
-grabTools(){
+pullTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
 	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo 'Creating $(HOME)/Tools'
@@ -412,6 +412,20 @@ sshKeysMenu(){
 	esac
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
+setPort(){
+	local x
+	local p
+	echo "Would you like to change the SSH Listen port?....y/n"
+	read x
+	case $x in
+		y )
+			read -p 'Enter port number :' p;
+			sudo sed -i "/#PortNumber 22/PortNumber $p/" /etc/ssh/sshd_config;
+			;;
+		n )
+			;;
+	esac
+}
 hardenSSH(){
 	clear
 	echo -e '------------------------------Step 4----------------------------------- \n'
@@ -463,8 +477,8 @@ hardenSSH(){
 }
 backupFiles
 updateSys
+installTools
 createDirs
 hardenSSH
-installTools
-grabTools
+pullTools
 termLog
