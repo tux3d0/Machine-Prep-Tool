@@ -436,7 +436,7 @@ hardenSSH(){
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
 	echo 'Enabling Pubkey based Authentication...'
 	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
-	
+	setPort
 	local enableRoot
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
