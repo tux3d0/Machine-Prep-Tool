@@ -3,7 +3,7 @@
 # Author: Tuxnix
 # Description: A tool used for automating the machine prep process 
 # for Red Teams & Bounty Hunters.
-# License: n/a
+# License: 
 clear
 printf "
 ################################################
@@ -58,19 +58,17 @@ osDirs(){
 	echo ' Organizing the project directory structure by OS '
 	echo -e ' *All folder structures currently, will be started in the current $HOME/Projects directory. \n'
 	echo 'Creating the '$HOME/Projects/$projectName 'directory'
-	mkdir -p $HOME/Projects/$projectName
 	echo 'Creating the '$HOME/Projects/$projectName/'Pre-Engagement  directory'
-	mkdir $HOME/Projects/$projectName/Pre-Engagement
-	echo 'Creating the '$HOME/Projects/$projectName/Reporting 'directory'
-	mkdir $HOME/Projects/$projectName/Reporting
+	mkdir -p $HOME/Projects/$projectName/Pre-Engagement
+	echo 'Creating the '$HOME/Projects/$projectName/Reporting/Screenshots 'directory'
+	mkdir -p $HOME/Projects/$projectName/Reporting/Screenshots
 	echo 'Creating the '$HOME/Projects/$projectName/Results 'directory'
 	mkdir $HOME/Projects/$projectName/Results
 	echo 'Creating the '$HOME/Projects/$projectName/Logs 'directory'
 	mkdir $HOME/Projects/$projectName/Logs
 	echo 'Creating the '$HOME/Projects/$projectName/Linux 'directory'
-	mkdir $HOME/Projects/$projectName/Linux
 	echo 'Creating the '$HOME/Projects/$projectName/Linux/'Information-Gathering  directory'
-	mkdir $HOME/Projects/$projectName/Linux/Information-Gathering
+	mkdir -p $HOME/Projects/$projectName/Linux/Information-Gathering
 	echo 'Creating the '$HOME/Projects/$projectName/Linux/'Vulnerability-Assessment  directory'
 	mkdir $HOME/Projects/$projectName/Linux/Vulnerability-Assessment
 	echo 'Creating the '$HOME/Projects/$projectName/Linux/Exploitation' directory'
@@ -80,9 +78,8 @@ osDirs(){
 	echo 'Creating the '$HOME/Projects/$projectName/Linux/'Lateral-Movement  directory'
 	mkdir $HOME/Projects/$projectName/Linux/Lateral-Movement
 	echo 'Creating the '$HOME/Projects/$projectName/Windows 'directory'
-	mkdir $HOME/Projects/$projectName/Windows
 	echo 'Creating the '$HOME/Projects/$projectName/Windows/'Information-Gathering  directory'
-	mkdir $HOME/Projects/$projectName/Windows/Information-Gathering
+	mkdir -p $HOME/Projects/$projectName/Windows/Information-Gathering
 	echo 'Creating the '$HOME/Projects/$projectName/Windows/'Vulnerability-Assessment directory'
 	mkdir $HOME/Projects/$projectName/Windows/Vulnerability-Assessment
 	echo 'Creating the '$HOME/Projects/$projectName/Windows/'Exploitation directory'
@@ -92,9 +89,8 @@ osDirs(){
 	echo 'Creating the '$HOME/Projects/$projectName/Windows/'Lateral-Movement directory'
 	mkdir $HOME/Projects/$projectName/Windows/Lateral-Movement
 	echo 'Creating the '$HOME/Projects/$projectName/macOS ' directory'
-	mkdir $HOME/Projects/$projectName/macOS
 	echo 'Creating the '$HOME/Projects/$projectName/macOS/'Information-Gathering directory'
-	mkdir $HOME/Projects/$projectName/macOS/Information-Gathering
+	mkdir -p $HOME/Projects/$projectName/macOS/Information-Gathering
 	echo 'Creating the '$HOME/Projects/$projectName/macOS/'Vulnerability-Assessment directory'
 	mkdir $HOME/Projects/$projectName/macOS/Vulnerability-Assessment
 	echo 'Creating the '$HOME/Projects/$projectName/macOS/Exploitation' directory'
@@ -187,8 +183,8 @@ penDirs(){
 	mkdir $HOME/Projects/$projectName/Network-Pentest/Wifi/Reports
 	echo 'Creating the '$HOME/Projects/$projectName/Network-Pentest/Printers' directory'
 	mkdir $HOME/Projects/$projectName/Network-Pentest/printers
-	echo 'Creating the '$HOME/Projects/$projectName/Reporting 'directory'
-	mkdir $HOME/Projects/$projectName/Reporting
+	echo 'Creating the '$HOME/Projects/$projectName/Reporting/Screenshots 'directory'
+	mkdir -p $HOME/Projects/$projectName/Reporting/Screenshots
 	echo 'Creating the '$HOME/Projects/$projectName/Results 'directory'
 	mkdir $HOME/Projects/$projectName/Results
 	echo 'Creating the '$HOME/Projects/$projectName/Logs 'directory'
@@ -374,8 +370,9 @@ enable2factor(){
 	echo -e '------------------------------Step 4.3----------------------------------- \n'
 	echo -e ' Enable 2FA SSH security using the Google API & Google Authenticator \n'
 	echo 'Un-commenting and enabling 2FA/PAM settings in your sshd_config file...'
-	sudo sed -i "s/#KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config
+	sudo sed -i "s/#KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config || sudo sed -i "s/KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config
 	sudo sed -i "s/UsePAM no/UsePAM yes/" /etc/ssh/sshd_config
+	sudo sed -i "s/#GSSAPIAuthentication no/GSSAPIAuthentication yes/" /etc/ssh/sshd_config
 }
 ## Disables the ability to SSH in using only a password
 disablePswd(){
@@ -425,8 +422,7 @@ hardenSSH(){
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
 	echo 'Enabling Pubkey based Authentication...'
 	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
-	echo 'Restarting sshd service....'
-
+	
 	local enableRoot
 	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
 	case $enableRoot in
@@ -462,7 +458,8 @@ hardenSSH(){
 		y ) disablePswd;;
 		n ) echo "Leaving password enabled + key based authentication......";;
 	esac
-	sudo systemctl restart sshd
+	echo 'Restarting sshd service....'
+	sudo systemctl restart ssh || sudo systemctl restart sshd
 }
 backupFiles
 updateSys
