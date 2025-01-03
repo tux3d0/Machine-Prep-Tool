@@ -182,7 +182,7 @@ penDirs(){
 	echo 'Creating the '$HOME/Projects/$projectName/Network-Pentest/Wifi/Reports' directory'
 	mkdir $HOME/Projects/$projectName/Network-Pentest/Wifi/Reports
 	echo 'Creating the '$HOME/Projects/$projectName/Network-Pentest/Printers' directory'
-	mkdir $HOME/Projects/$projectName/Network-Pentest/printers
+	mkdir -p $HOME/Projects/$projectName/Network-Pentest/Printers
 	echo 'Creating the '$HOME/Projects/$projectName/Reporting/Screenshots 'directory'
 	mkdir -p $HOME/Projects/$projectName/Reporting/Screenshots
 	echo 'Creating the '$HOME/Projects/$projectName/Results 'directory'
