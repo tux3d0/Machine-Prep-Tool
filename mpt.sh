@@ -220,7 +220,7 @@ createDirs(){
 ## Download , Install , & configure The GoLang programming Language. 
 installGo(){
 	## Pull Go directly from the site
-	wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+	curl -O https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 	## Remove any previous versions of Go and extracts the newly downloaded file
 	sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 	export PATH=$PATH:/usr/local/go/bin
@@ -250,11 +250,10 @@ installPowShell(){
 installRust(){
 	echo "Downloading and Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-	
 }
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
-	echo -e '-------------------------------Step 5.1------------------------------- \n'
+	echo -e '-------------------------------Step 5------------------------------- \n'
 	echo -e 'Installing Tools from your APT list... \n'
 	sudo apt install $(cat ../tools.list | tr "\n" " ") -y
 	echo 'Installing Python module impacket...'
@@ -267,7 +266,7 @@ installTools(){
 ## Clones Repos from GitHub & installs python modules
 grabTools(){
 	# will be used as a function for the git clone commands for cloning all the tools from GitHub
-	echo -e '-------------------------------Step 5.2------------------------------- \n'
+	echo -e '-------------------------------Step 5.1------------------------------- \n'
 	echo 'Creating $(HOME)/Tools'
 	mkdir $HOME/Tools
 	cd $HOME/Tools
@@ -277,6 +276,8 @@ grabTools(){
 	git clone https://github.com/peass-ng/PEASS-ng.git
 	echo -e 'Grabbing CeWL word-list generator... \n'
 	git clone https://github.com/digininja/CeWL.git 
+	echo -e "Grabbing waybackURL from GitHub........ \h"
+	git clone https://github.com/tomnomnom/waybackurls.git
 	echo -e 'Grabbing gHidra from GitHub.... \n'
 	git clone https://github.com/NationalSecurityAgency/ghidra.git
 	echo -e 'Grabbing MADCert from GitHub.... \n'
@@ -356,7 +357,6 @@ createSU(){
 }
 ## menu function for deciding whether to create a new superuser account or not
 suMenu(){
-	clear
 	local x
 	echo -e '------------------------------Step 4.1----------------------------------- \n'
 	echo "Have you already created a superuser account? y/n :"
@@ -389,7 +389,6 @@ disablePswd(){
 }
 ## Function for importing pre-created project ssh-keys
 importKeys(){
-	clear
 	echo -e '-------------------------------Step 4.4a------------------------------- \n'
 	echo -e "Starting the SSH-Key importing process... \n"
 	echo -e "This feature is currently a work in progress, you will need to import your keys manually for the time being... \n"
@@ -406,7 +405,6 @@ genKeys(){
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	clear
 	echo -e '-------------------------------Step 4.4------------------------------- \n'
 	local x
 	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
