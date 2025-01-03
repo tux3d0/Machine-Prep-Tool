@@ -14,9 +14,9 @@
       <li> Enables Google 2fA & PAM ( Work In Progress )</li>
     </ul>
   <li> Creates Directory Structure for pentest / CTF orginization & reporting</li>
-  <li> Downloads & Installs tools via APT and pulls from Tools.list -- Allowing for customized lists....will ask for this file name in a future commit</li>
+  <li> Downloads & Installs tools via APT and pulls from 'tools.list' -- Allowing for customized lists....will ask for this file name in a future commit</li>
   <li> Creates a $HOME/Tools directory and pulls a set of relative , highly efficient, & up-to-date tools / frameworks from GitHub</li>
-  <li> Automates the installation & configurations of some cloned packages</li>
+  <li> Automates the installation & configurations of some cloned repos</li>
   <li> Downloads , installs, & configures the following languages</li>
     <ul>
       <li> Python 3</li>
