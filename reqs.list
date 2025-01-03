@@ -1,12 +1,10 @@
 openssh-server
 git
-python3
-python2.7
+python
 pipx
 wget
 curl
 ruby
 vim
 tmux
-tor
 openvpn
