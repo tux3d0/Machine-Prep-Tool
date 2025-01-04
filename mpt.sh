@@ -1,9 +1,57 @@
 #!/bin/bash
-# Name: Red Team Machine Prep Tool M.P.T
-# Author: Tuxnix
-# Description: A tool used for automating the machine prep process 
-# for Red Teams & Bounty Hunters.
-# License: 
+#==============================================================================
+#
+#          FILE: mpt.sh
+# 
+#         USAGE: ./mpt.sh
+# 
+#   DESCRIPTION: A script to automate the setup of a penetration testing machine
+# on a Debian-based system. This script will install all the necessary tools and
+# services needed for a penetration test. It will also create a directory structure
+# for the project and organize it by operating system or penetration test type.
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: currently bugs with the installGo function and installing Sliver C2
+#         NOTES: This script is a work in progress and is not yet complete.
+#        AUTHOR: Tuxnix
+#  ORGANIZATION: 
+#       CREATED: $(date +%Y-%m-%d)
+#      REVISION: 
+#
+#==============================================================================
+#set -o nounset                              # Treat unset variables as an error    
+#set -e # Exit on error 
+#set -x # Debugging on
+#set -u # Exit if variable is unset
+#set -o pipefail # Exit if pipe fails
+#set -o errexit # Exit on error
+#set -o errtrace # Exit on error
+#set -o functrace # Exit on error
+#set -o xtrace # Exit on error
+#set -o verbose # Exit on error
+#set -o noclobber # Exit on error
+#set -o noglob # Exit on error
+#set -o nounset # Exit on error
+#set -o notify # Exit on error
+#set -o ignoreeof # Exit on error
+#set -o monitor # Exit on error
+#set -o nocaseglob # Exit on error
+#set -o nolog # Exit on error
+#set -o vi # Exit on error
+#set -o emacs # Exit on error
+#set -o nocaseglob # Exit on error
+#set -o nullglob # Exit on error
+#set -o ignoreeof # Exit on error
+#set -o noexec # Exit on error
+#set -o noglob # Exit on error
+#set -o nolog # Exit on error
+#set -o pipefail # Exit on error
+#set -o verbose # Exit on error
+#set -o xtrace # Exit on error
+#set -o ignoreeof # Exit on error
+#set -o notify # Exit on error
+#==============================================================================
 clear
 printf "
 ################################################
@@ -15,36 +63,28 @@ printf "
 #                                              #
 ################################################
 "
-echo " "
-echo "*Your sudo password will be needed at points of this script*"
-read -p "Enter Project name " projectName
-
-if [ -z "$projectName" ]; then
-	echo "The Project Name can't be left blank"
-	echo "Enter Client/CTF/Project name..."
-	read projectName
-	echo -e 'The '$projectName' attack machine is being prepped.... \n'
-else
-	echo -e 'The '$projectName' attack machine is being prepped.... \n'
-fi
-
-## Backup system files before making changes
-backupFiles(){
+echo -e "This script will automate the setup of a pen-testing machine on a Debian-based system. \n"
+echo -e " ***Your sudo password will be needed at points of this script*** \n"
+#============================function definitions==============================
+# 
+## Step 1 of Machine Prep....Backup system files before making changes
+backupSystemFiles() {
 	echo "-------------------------------Step 1-------------------------------"
-	printf "Backing up the system files that will be modded by this script..."
-	echo -e 'Backing up your .bashrc file \n'
-	#### Make a backup of the .bashrc file
-	cp ~/.bashrc ~/.bashrc.bak
-	echo "Backing up /etc/passwd..."
-	sudo cp /etc/passwd /etc/passwd.bak
-	echo "Backing up /etc/apt/sources.list..."
-	sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-	echo "Backing up /etc/ssh/sshd_config...."
-	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-	echo -e " backup complete..... \n"
+	printf "Backing up the system files that will be modded by this script or possibly modded during the test..."
+	echo "Creating backup copies of important system files..."
+	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
+	mkdir -p "$backup_dir"
+	sudo cp /etc/ssh/sshd_config "$backup_dir/sshd_config.bak"
+	sudo cp /etc/passwd "$backup_dir/passwd.bak"
+	sudo cp /etc/group "$backup_dir/group.bak"
+	sudo cp /etc/shadow "$backup_dir/shadow.bak"
+	sudo cp /etc/gshadow "$backup_dir/gshadow.bak"
+	sudo cp /etc/sudoers "$backup_dir/sudoers.bak"
+	sudo cp /etc/apt/sources.list "$backup_dir/sources.list.bak"
+	cp ~/.bashrc "$backup_dir/bashrc.bak"
+	echo "Backup completed. Files are stored in $backup_dir"
 }
-
-# Step 1 of machine prep system updates
+# Step 2 of machine prep system updates
 updateSys() {
 	echo "-------------------------------Step 2-------------------------------"
     echo " Bringing the system and all of its files up-to-date...."
@@ -262,7 +302,7 @@ installTools(){
 	## Install Programming Languages
 	installPowShell
 	installRust
-	installGo
+	#installGo
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
@@ -480,10 +520,26 @@ hardenSSH(){
 	echo 'Restarting ssh service....'
 	sudo service restart ssh || sudo systemctl restart sshd
 }
-backupFiles
-updateSys
-installTools
-createDirs
-hardenSSH
-pullTools
-termLog
+## Main function to call all other functions
+main(){
+	backupSystemFiles
+	updateSys
+	createDirs
+	installTools
+	pullTools
+	hardenSSH
+	termLog
+}
+## Start function to begin the script
+start() {
+	echo " "
+	read -p "Enter Project name " projectName
+
+	if [ -z "$projectName" ]; then
+		echo "The Project Name can't be left blank"
+		start
+	else
+		echo -e 'The '$projectName' attack machine is being prepped.... \n'
+		main
+	fi
+}
