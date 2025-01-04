@@ -304,7 +304,7 @@ pullTools(){
 	#
 	## save installing Sliver C2 for last
 	echo -e 'Grabbing & Installing Sliver C2 as a service.... \N'
-	curl https://sliver.sh/install|sudo bash
+	# curl https://sliver.sh/install|sudo bash
 
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
@@ -477,8 +477,8 @@ hardenSSH(){
 		y ) disablePswd;;
 		n ) echo "Leaving password enabled + key based authentication......";;
 	esac
-	echo 'Restarting sshd service....'
-	sudo systemctl restart ssh || sudo systemctl restart sshd
+	echo 'Restarting ssh service....'
+	sudo service restart ssh || sudo systemctl restart sshd
 }
 backupFiles
 updateSys
