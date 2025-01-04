@@ -221,11 +221,11 @@ installGo(){
 	## Pull Go directly from the site
 	curl -O https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 	## Remove any previous versions of Go and extracts the newly downloaded file
-	sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
+	sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 	export PATH=$PATH:/usr/local/go/bin
 	export GOPATH=$HOME/go
 	export PATH=$PATH:$GOPATH/bin
-	source ~/.profile
+	. ~/.profile
 	## prints Go version to confirm installation
 	go version
 }
@@ -249,6 +249,7 @@ installPowShell(){
 installRust(){
 	echo "Downloading and Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	. "$HOME/.cargo/env" 
 }
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
@@ -258,7 +259,7 @@ installTools(){
 	# sudo apt install $(cat tools.list | tr "\n" " ") -y
 	echo 'Installing Python module impacket...'
 	python3 -m pipx install impacket
-	## Install Powershell 7.x
+	## Install Programming Languages
 	installPowShell
 	installRust
 	installGo
