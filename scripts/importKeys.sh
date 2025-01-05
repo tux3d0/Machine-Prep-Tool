@@ -1,9 +1,26 @@
 #!/bin/bash
-
+#===============================================================================
+#
+#          FILE: importKeys.sh
+# 
+#         USAGE: ./importKeys.sh
+# 
+#   DESCRIPTION: A quick script to import an SSH key into the authorized_keys file
+# 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Tuxnix
+#  ORGANIZATION: ---
+#       CREATED: $(date +%Y-%m-%d)
+#      REVISION: ---
+#===============================================================================
+#
 # Function to display a message with a border
 display_message() {
     local message=$1
-    local border="========================================"
+    local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
 
