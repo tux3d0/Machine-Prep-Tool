@@ -66,11 +66,11 @@ printf "
 echo -e "This script will automate the setup of a pen-testing machine on a Debian-based system. \n"
 echo -e " ***Your sudo password will be needed at points of this script*** \n"
 #============================function definitions==============================
-# 
+# 	**Note: Needs better orginization!
 # Adds a border around a message for better readability 
 display_message() {
     local message=$1
-    local border="===================================================="
+    local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
 ## Step 1 of Machine Prep....Backup system files before making changes
@@ -95,20 +95,28 @@ backupSystemFiles() {
 }
 # Step 2 of machine prep system updates
 updateSys() {
-	echo "-------------------------------Step 2-------------------------------"
-    echo " Bringing the system and all of its files up-to-date...."
+	local msg1="
+ ------------------------------Step 2-------------------------------
+  Bringing the system and all of its files up-to-date....
+  "
+	display_message "$msg1"
     sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
     sudo apt update
-    echo 'Your machine is up-to-date...'
-    echo 'Now We are installing some programming languages and other required services'
-    xargs sudo apt install -y < reqs.list
-    #sudo apt install $(cat reqs.list | tr "\n" " ") -y
+	local msg2="
+    Your machine is up-to-date...
+    Now We are installing some required services and tools...
+	"
+	display_message "$msg2"
+    xargs sudo apt install -y < reqs.list	# Install required packages from reqs.list
 }
 
 ## Creates Dir structure organized primarily by O.S type
 osDirs(){
-	echo ' Organizing the project directory structure by OS '
-	echo -e ' *All folder structures currently, will be started in the current $HOME/Projects directory. \n'
+	local msg="
+	Organizing the project directory structure by OS type
+	*All folder structures currently, will be started in the current $HOME/Projects directory.
+	"
+	display_message "$msg"
 	echo 'Creating the '$HOME/Projects/$projectName 'directory'
 	echo 'Creating the '$HOME/Projects/$projectName/'Pre-Engagement  directory'
 	mkdir -p $HOME/Projects/$projectName/Pre-Engagement
@@ -151,11 +159,12 @@ osDirs(){
 	mkdir $HOME/Projects/$projectName/macOS/Post-Exploitation
 	echo 'Creating the '$HOME/Projects/$projectName/macOS/'Lateral-Movement directory'
 	mkdir $HOME/Projects/$projectName/macOS/Lateral-Movement
-	echo -e '\n'
-	echo 'The '$projectName' Folder structure is complete'
-	echo $HOME/Projects/$projectName
+	local msg2="
+	The $projectName Folder structure is complete
+	$HOME/Projects/$projectName
 	ls -ln $HOME/Projects/$projectName
-	echo -e 'Moving onto the next step.... \n'
+	"
+	display_message "$msg2"
 }
 ## Create Dir structures organized primarily by Penetration Test type
 penDirs(){
@@ -281,7 +290,7 @@ installGo(){
 
 ## Download & install PowerShell 7.x
 installPowShell(){
-	echo -e 'Downloading and Installing PowerShell 7.x........ \n'
+	display_message "Downloading and Installing PowerShell 7.x..."
 	# Install pre-requisite packages.
 	sudo apt-get install -y wget
 	# Download the PowerShell package file
@@ -296,17 +305,23 @@ installPowShell(){
 }
 ## Downloading & Installing the Rust programming language. 
 installRust(){
-	echo "Downloading and Installing Rust..."
+	display_message "Downloading and Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	. "$HOME/.cargo/env" 
 }
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
-	echo -e '-------------------------------Step 5------------------------------- \n'
-	echo -e 'Installing Tools from your APT tools.list... \n'
+	local msg1="
+ -------------------------------Step 5-------------------------------
+  Installing Tools from your APT tools.list, Now's a good time to refill the coffee cup...
+  "
+	display_message "$msg1"
 	xargs sudo apt install -y < tools.list
-	# sudo apt install $(cat tools.list | tr "\n" " ") -y
-	echo 'Installing Python module impacket...'
+	local msg2="
+  Installing Python3 modules from your Python3 modules listed...
+  Installing impacket, a Python module for working with network protocols....
+  "
+    display_message "$msg2"
 	python3 -m pipx install impacket
 	## Install Programming Languages
 	installPowShell
@@ -315,44 +330,46 @@ installTools(){
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
-	# will be used as a function for the git clone commands for cloning all the tools from GitHub
-	echo -e '-------------------------------Step 5.1------------------------------- \n'
-	echo 'Creating $(HOME)/Tools'
+	## Cloning From public GitHub
+	local msg1=" 
+ -------------------------------Step 5.1-----------------------------------
+  Grabbing Tools from GitHub Repos, you will still need to build some of these packages...
+  Creating $(HOME)/Tools
+  "
+	display_message "$msg1"
 	mkdir $HOME/Tools
 	cd $HOME/Tools
-	echo -e 'Grabbing Tools from GitHub Repos, you will still need to build some of these packages... \n'
-	echo 'Grabbing P.E.A.S..'
-	# From public GitHub
+	## Cloning From public GitHub
+	display_message 'Grabbing P.E.A.S..'
 	git clone https://github.com/peass-ng/PEASS-ng.git
-	echo -e 'Grabbing CeWL word-list generator... \n'
+	display_message 'Grabbing CeWL word-list generator...'
 	git clone https://github.com/digininja/CeWL.git 
-	echo -e "Grabbing waybackURL from GitHub........ \h"
+	display_message "Grabbing waybackURL from GitHub........"
 	git clone https://github.com/tomnomnom/waybackurls.git
-	echo -e 'Grabbing gHidra from GitHub.... \n'
+	display_message 'Grabbing gHidra from GitHub....'
 	git clone https://github.com/NationalSecurityAgency/ghidra.git
-	echo -e 'Grabbing MADCert from GitHub.... \n'
+	display_message 'Grabbing MADCert from GitHub....'
 	git clone https://github.com/NationalSecurityAgency/MADCert.git
-	echo -e 'Grabbing osmedeus a recon automation framework..... \n'
+	display_message 'Grabbing osmedeus a recon automation framework.....'
 	git clone https://github.com/j3ssie/osmedeus.git
-	echo -e 'Grabbing moonwalk system wiper from GitHub..... \n'
+	display_message 'Grabbing nmapAutomator from GitHub......'
+	git clone https://github.com/21y4d/nmapAutomator.git
+	display_message 'Grabbing PowerShell-RAT from GitHub.......'
+	git clone git clone https://github.com/Viralmaniar/Powershell-RAT
+	#
+	## save installing C2s,moonwalk,& ReconFlow for last
+	display_message "Installing MoonWalk system wiper"
 	git clone https://github.com/mufeedvh/moonwalk.git
 	cd moonwalk/
 	cargo build --release
 	cd ../
-	echo -e 'Grabbing nmapAutomator from GitHub...... \n'
-	git clone https://github.com/21y4d/nmapAutomator.git
-	echo -e 'Grabbing PowerShell-RAT from GitHub....... \n'
-	git clone git clone https://github.com/Viralmaniar/Powershell-RAT
-	echo -e 'Grabbing and Installing ReconFlow from GitHub...... \n'
+	display_message "Installing ReconFlow Recon Automation Framework"
 	git clone https://github.com/six2dez/reconftw
 	cd reconftw/
 	./install.sh
 	cd ../
-
 	#
-	#
-	## save installing Sliver C2 for last
-	echo -e 'Grabbing & Installing Sliver C2 as a service.... \N'
+	display_message "Installing Sliver C2"
 	# curl https://sliver.sh/install|sudo bash
 
 }
@@ -376,20 +393,23 @@ termLog(){
 }
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
-	echo -e '------------------------------Step 4.2----------------------------------- \n'
-	echo -e 'Disabling SSH access & Restricting TTY access and locking down PAM for the root user. \n'
+	local msg1="
+ ------------------------------Step 4.2-----------------------------------
+  Disabling SSH access & Restricting TTY access and locking down PAM for the root user.
+  "
+	display_message "$msg1"
 	# Disable root login
-	echo 'Disabling the root account...locking password'
+	display_message 'Disabling the root account...locking password'
 	sudo passwd -l root
 	# sudo sed -i "s/root:x:0:0:root"
 
 	# Disable SSH root login
-	echo 'Disabling Root SSH login...'
+	display_message 'Disabling Root SSH login...'
 	sudo sed -i "s/#PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
 	sudo systemctl restart sshd || sudo service restart ssh
 
 	# Restrict root access via PAM
-	echo -e 'Restricting root access via PAM... \n'
+	display_message 'Restricting root access via PAM...'
 	sudo touch /etc/securetty
 	echo "Backing up /etc/securetty...."
 	sudo cp /etc/securetty /etc/securetty.bak
@@ -398,24 +418,28 @@ disableRoot(){
 }
 ## Create a super user account before disabling root account
 createSU(){
-	echo -e '------------------------------Step 4.1a----------------------------------- \n'
-	echo ' Creating Super User account....'
+	local msg="
+ ------------------------------Step 4.1a-----------------------------------
+  Creating a Super User account before disabling the root account.
+  "
 	read -p 'Enter username : ' supUser
 	sudo adduser "$supUser"
 	echo "Adding $supUser to sudoers group..."
 	sudo usermod -aG sudo "$supUser"
 	# Ensure superuser can perform administrative tasks
 	echo "$supUser ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$supUser
-	echo -e "Disabling root user account...."
+	display_message "Disabling root user account...."
 	disableRoot
 }
 ## menu function for deciding whether to create a new superuser account or not
 suMenu(){
 	local x
-	echo -e '------------------------------Step 4.1----------------------------------- \n'
-	echo "Have you already created a superuser account? y/n :"
+	local msg="
+ ------------------------------Step 4.1-----------------------------------
+  Have you already created a superuser account?..... y/n :
+  "
+	display_message "$msg"
 	read x 
-
 	case $x in
 		y) echo "Disabling root account...."; disableRoot;;
 		n) echo "Creating a new superuser account before moving forward...."; createSU;;
@@ -425,22 +449,27 @@ suMenu(){
 
 ## Enable SSH 2FA 
 enable2factor(){
-	echo -e '------------------------------Step 4.3----------------------------------- \n'
-	echo -e ' Enable 2FA SSH security using the Google API & Google Authenticator \n'
-	echo 'Un-commenting and enabling 2FA/PAM settings in your sshd_config file...'
+	local msg="
+ -----------------------------Step 4.3-----------------------------------
+  Enable 2FA SSH security using the Google API & Google Authenticator App
+  Un-commenting and enabling 2FA/PAM settings in your sshd_config file...
+  "
+	display_message "$msg"
 	sudo sed -i "s/#KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config || sudo sed -i "s/KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config
 	sudo sed -i "s/UsePAM no/UsePAM yes/" /etc/ssh/sshd_config
 	sudo sed -i "s/#GSSAPIAuthentication no/GSSAPIAuthentication yes/" /etc/ssh/sshd_config
 }
 ## Disables the ability to SSH in using only a password
 disablePswd(){
-	echo -e '------------------------------Step 4.5----------------------------------- \n'
-	echo -e ' Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled... \n'
+	local msg1="
+ ------------------------------Step 4.5-----------------------------------
+  Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled...
+  "
 	# Disable SSH password authentication login
 	echo 'Disabling password authentication...'
 	sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-	echo 'Restarting sshd service....'
-	sudo systemctl restart sshd
+	echo 'Restarting SSH service....'
+	sudo systemctl restart sshd || sudo service restart ssh
 }
 ## Functions for importing pre-created project ssh-keys
 # Function that imports the SSH key
@@ -486,7 +515,7 @@ sshKeysMenu(){
 setPort(){
 	local x
 	local p
-	echo "Would you like to change the SSH Listen port?....y/n"
+	display_message "Would you like to change the SSH Listen port?....y/n"
 	read x
 	case $x in
 		y )
