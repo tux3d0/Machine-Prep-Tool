@@ -552,13 +552,13 @@ hardenSSH(){
 }
 ## Main function to call all other functions
 main(){
-	backupSystemFiles
-	updateSys	#also installs from reqs.list
-	createDirs
-	hardenSSH
-	installTools
-	pullTools
-	termLog
+	backupSystemFiles	# Call to function to backup system files before making changes
+	updateSys	# Call to function to updates the system and install required packages from reqs.list
+	createDirs	# Call to function to create the project directory structure
+	hardenSSH	# Call to function to harden the SSH service & lock down the root account
+	installTools	# Call to function to install all the tools from the tools.list file
+	pullTools	# Call to function to pull all the tools from GitHub
+	termLog		# Call to function to enable terminal logging
 }
 ## Start function to begin the script
 start() {
