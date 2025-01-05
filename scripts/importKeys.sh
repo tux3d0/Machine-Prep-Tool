@@ -1,21 +1,5 @@
 #!/bin/bash
-#===============================================================================
-#
-#          FILE: importKeys.sh
-# 
-#         USAGE: ./importKeys.sh
-# 
-#   DESCRIPTION: A quick script to import an SSH key into the authorized_keys file
-# 
-#       OPTIONS: ---
-#  REQUIREMENTS: ---
-#          BUGS: ---
-#         NOTES: ---
-#        AUTHOR: Tuxnix
-#  ORGANIZATION: ---
-#       CREATED: $(date +%Y-%m-%d)
-#      REVISION: ---
-#===============================================================================
+
 # Function to display a message with a border
 display_message() {
     local message=$1
@@ -34,9 +18,44 @@ import_ssh_key() {
     fi
 }
 
-# Main script
-clear
-display_message "SSH Key Importer"
+# Function to generate a new SSH key
+generate_ssh_key() {
+    local email=$1
+    ssh-keygen -t ed25519 -C "$email" -f ~/.ssh/id_ed25519
+    display_message "New SSH key generated successfully!"
+}
 
-read -p "Enter the path to your SSH key: " key_path
-import_ssh_key "$key_path"
+# Function to display the menu
+display_menu() {
+    echo "1. Import an existing SSH key"
+    echo "2. Generate a new SSH key"
+    echo "3. Exit"
+}
+
+# Main script
+while true; do
+    clear
+    display_message "SSH Key Manager"
+    display_menu
+    read -p "Choose an option: " option
+
+    case $option in
+        1)
+            read -p "Enter the path to your SSH key: " key_path
+            import_ssh_key "$key_path"
+            ;;
+        2)
+            read -p "Enter your email for the new SSH key: " email
+            generate_ssh_key "$email"
+            ;;
+        3)
+            display_message "Goodbye!"
+            exit 0
+            ;;
+        *)
+            display_message "Invalid option. Please try again."
+            ;;
+    esac
+
+    read -p "Press Enter to continue..."
+done
