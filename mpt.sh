@@ -67,12 +67,21 @@ echo -e "This script will automate the setup of a pen-testing machine on a Debia
 echo -e " ***Your sudo password will be needed at points of this script*** \n"
 #============================function definitions==============================
 # 
+# Adds a border around a message for better readability 
+display_message() {
+    local message=$1
+    local border="===================================================="
+    echo -e "\n$border\n$message\n$border\n"
+}
 ## Step 1 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
-	echo "-------------------------------Step 1-------------------------------"
-	printf "Backing up the system files that will be modded by this script or possibly modded during the test..."
-	echo "Creating backup copies of important system files..."
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
+	local msg="
+ -------------------------------Step 1-------------------------------
+  Creating backup copies of important system files and storing them in :
+	 $backup_dir
+	 "
+	display_message "$msg"
 	mkdir -p "$backup_dir"
 	sudo cp /etc/ssh/sshd_config "$backup_dir/sshd_config.bak"
 	sudo cp /etc/passwd "$backup_dir/passwd.bak"
@@ -350,16 +359,20 @@ pullTools(){
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 termLog(){
 	local timestamp=$(date +%s)
-	echo -e '------------------------------Step 6----------------------------------- \n'
-	echo 'Enabling Terminal logging, commands entered will be stored in a log file with timestamps.'
-	echo -e ' Useful for Proof of Concepts and other reporting and liability aspects \n'
-	echo -e 'Adding a Date & Timestamp to your terminal.... \n'
+	local msg="
+ ------------------------------Step 6-----------------------------------
+  Enabling Terminal logging, commands entered will be stored in a log file with timestamps.
+  Useful for Proof of Concepts and other reporting and liability aspects 
+  Adding a Date & Timestamp to your terminal.....
+	 "
+	display_message "$msg"
 	#### Customize bash prompt - add Date & Time stamp
 	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
 	local x="$timestamp"_"$projectName.log"
-	echo -e "Starting to log all commands entered into this terminal session.... \n"
-	echo -e "Storing log in: $HOME/Projects/$projectName/Logs/$x"
-	script $HOME/Projects/$projectName/Logs/$x
+	display_message "
+	Starting to log all commands entered into this terminal session....
+	$(script $HOME/Projects/$projectName/Logs/$x)
+	"
 }
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
@@ -373,7 +386,7 @@ disableRoot(){
 	# Disable SSH root login
 	echo 'Disabling Root SSH login...'
 	sudo sed -i "s/#PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
-	sudo systemctl restart sshd
+	sudo systemctl restart sshd || sudo service restart ssh
 
 	# Restrict root access via PAM
 	echo -e 'Restricting root access via PAM... \n'
@@ -429,11 +442,24 @@ disablePswd(){
 	echo 'Restarting sshd service....'
 	sudo systemctl restart sshd
 }
-## Function for importing pre-created project ssh-keys
+## Functions for importing pre-created project ssh-keys
+# Function that imports the SSH key
+import_ssh_key() {
+    local key_path=$1
+    if [ -f "$key_path" ]; then
+        cat "$key_path" >> ~/.ssh/authorized_keys
+        display_message "SSH key imported successfully!"
+    else
+        display_message "Error: File not found at $key_path"
+    fi
+}
 importKeys(){
+	clear
 	echo -e '-------------------------------Step 4.4a------------------------------- \n'
-	echo -e "Starting the SSH-Key importing process... \n"
-	echo -e "This feature is currently a work in progress, you will need to import your keys manually for the time being... \n"
+	display_message "SSH Key Importer"
+
+	read -p "Enter the path to your SSH key: " key_path
+	import_ssh_key "$key_path"
 }
 ## Function for generating new ED25519 SSH key pair storing it in default dir $HOME/.ssh/
 genKeys(){
@@ -473,26 +499,30 @@ setPort(){
 }
 hardenSSH(){
 	clear
-	echo -e '------------------------------Step 4----------------------------------- \n'
-	echo -e 'Beginning to harden your machines SSH.... \n'
-	echo 'Enabling SSH logging and setting log level to INFO'
+	local msg="
+	------------------------------Step 4-----------------------------------
+	Beginning to harden your machines SSH....
+	Enabling SSH logging and setting log level to INFO
+	Setting Max Sessions to 5
+	Disabling root SSH login
+	Enabling Pubkey based Authentication
+	"
+	display_message $msg
 	sudo sed -i "s/#LogLevel INFO/LogLevel INFO/" /etc/ssh/sshd_config
-	echo 'Setting max sessions to 5...'
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
-	echo 'Enabling Pubkey based Authentication...'
 	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
 	setPort
 	local enableRoot
-	read -p "Would you like remote root SSH access enabled? y/N (default is disabled ssh login)" enableRoot
+	read -p "Would you like remote root SSH access enabled? y/N " enableRoot 
 	case $enableRoot in
 		n )
 		echo 'root SSH will be disabled'; suMenu ;;
 		N)
 		echo 'root SSH will be disabled'; suMenu ;;
 		y )
-		echo 'root SSH will be enabled'	;;
+		echo 'root SSH will need to be self-configured'	;;
 		Y)
-		echo 'root SSH will be enabled'	;;
+		echo 'root SSH will be need to be self-configured'	;;
 		* ) echo 'root SSH will be disabled'; suMenu ;;
 	esac
 ## enable 2FA menu
@@ -523,11 +553,11 @@ hardenSSH(){
 ## Main function to call all other functions
 main(){
 	backupSystemFiles
-	updateSys
+	updateSys	#also installs from reqs.list
 	createDirs
+	hardenSSH
 	installTools
 	pullTools
-	hardenSSH
 	termLog
 }
 ## Start function to begin the script
@@ -543,3 +573,4 @@ start() {
 		main
 	fi
 }
+start
