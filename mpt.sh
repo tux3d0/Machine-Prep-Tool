@@ -451,20 +451,19 @@ suMenu(){
 }
 
 ## Enable SSH 2FA 
-enable2factor(){
+enable2fa(){
 	local msg="
+
  -----------------------------Step 4.3-----------------------------------
   Enable 2FA SSH security using the Google API & Google Authenticator App
   Un-commenting and enabling 2FA/PAM settings in your sshd_config file...
+
   "
 	display_message "$msg"
 	sudo apt-get update
 	sudo apt-get install libpam-google-authenticator -y
 	# Configure Google Authenticator for the current user
 	google-authenticator -t -d -f -r 3 -R 30 -w 3
-
-	# Backup the SSH configuration file
-	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
 	# Enable ChallengeResponseAuthentication in SSH configuration
 	sudo sed -i 's/^#ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
@@ -544,6 +543,22 @@ setPort(){
 			;;
 	esac
 }
+
+2faMenu(){
+    ## enable 2FA menu
+	local x
+	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" x
+	case $x in
+		n )
+		echo 'Leave Google 2FA disabled';;
+		N)
+		echo 'Leave Google 2FA disabled';;
+		y )
+		echo '2FA SSH security will be enabled'; enable2fa;;
+		Y)
+		echo '2FA SSH security will be enabled'; enable2fa;;
+	esac
+}
 hardenSSH(){
 	clear
 	local msg="
@@ -572,21 +587,10 @@ hardenSSH(){
 		echo 'root SSH will be need to be self-configured'	;;
 		* ) echo 'root SSH will be disabled'; suMenu ;;
 	esac
-## enable 2FA menu
-	local enable2fa
-	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" enable2fa
-	case $enable2fa in
-		n )
-		echo '2FA SSH security will remain disabled' ;;
-		N)
-		echo '2FA SSH security will remain disabled' ;;
-		y )
-		echo '2FA SSH security will be enabled'; enable2factor;;
-		Y)
-		echo '2FA SSH security will be enabled'; enable2factor;;
-	esac
+
 	##calls the menu for generating or importing ssh keys
 	sshKeysMenu
+	2faMenu
 ## menu for disabling password auth or leaving it enabled with key-based 
 	local p
 	read -p "Would you like to disable password authentication ?....y/n :" p
@@ -594,7 +598,7 @@ hardenSSH(){
 		y ) disablePswd;;
 		n ) echo "Leaving password enabled + key based authentication......";;
 	esac
-	echo 'Restarting ssh service....'
+	display_message "Restarting ssh service...."
 	sudo service restart ssh || sudo systemctl restart sshd
 }
 ## Welcome Message function
