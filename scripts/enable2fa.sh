@@ -24,7 +24,7 @@ display_message() {
     local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
-
+## Configures the system for Google 2FA and the Google Authenticator app
 enable2fa() {
     # Update package list and install Google Authenticator
     sudo apt-get update
@@ -50,4 +50,21 @@ enable2fa() {
 
     display_message "2FA SSH authentication has been enabled using Google's Authenticator app."
 }
-enable2fa
+## Displayed Menu asking the users choice
+menu(){
+    ## enable 2FA menu
+	local x
+	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" x
+	case $x in
+		n )
+		echo 'Leave Google 2FA disabled'; exit ;;
+		N)
+		echo 'Leave Google 2FA disabled'; exit ;;
+		y )
+		echo '2FA SSH security will be enabled'; enable2fa;;
+		Y)
+		echo '2FA SSH security will be enabled'; enable2fa;;
+	esac
+}
+
+menu
