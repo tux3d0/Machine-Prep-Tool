@@ -13,7 +13,8 @@ sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 # Enable ChallengeResponseAuthentication in SSH configuration
 sudo sed -i 's/^#ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
 
-
+# Backup the PAM configuration file
+sudo cp /etc/pam.d/sshd /etc/pam.d/sshd.bak
 
 # Add Google Authenticator to PAM configuration
 echo "auth required pam_google_authenticator.so" | sudo tee -a /etc/pam.d/sshd
