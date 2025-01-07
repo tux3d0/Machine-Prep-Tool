@@ -344,7 +344,7 @@ installMoon() {
 	cargo build --release
 	cd $HOME/Tools/
 }
-installRFlow() {
+installRFTW() {
 	cd $HOME/Tools/
 	display_message "Installing ReconFlow Recon Automation Framework...."
 	git clone https://github.com/six2dez/reconftw
@@ -385,7 +385,7 @@ pullTools(){
 	#
 	#
 	installMoon
-	installRFlow
+	installRFTW
 	display_message "Installing Sliver C2"
 	wget https://sliver.sh/install && chmod +x install && sudo ./install && mv install installSliver
 	display_message "Sliver Installation Complete"
