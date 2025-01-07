@@ -250,12 +250,16 @@ penDirs(){
 ## Menu function for the directory structure builder
 createDirs(){
 	local x
-	echo -e "-------------------------------Step 3------------------------------- \n"
-	echo "Would you like to organize the project by 
-	1) Operating System 
-	2) Pen-test Type 
-	0) Exit
+	local msg="
+-------------------------------Step 3-------------------------------
+
+			Would you like to organize the project by 
+				1) Operating System 
+				2) Pen-test Type 
+				0) Exit
+
 	"
+	display_message "$msg"
 	read x
 
 	case $x in
@@ -267,6 +271,7 @@ createDirs(){
 
 ## Download , Install , & configure The GoLang programming Language. 
 installGo(){
+	display_message " Downloading and Installing GoLang..."
 	## Pull Go directly from the site
 	wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 	## Remove any previous versions of Go and extracts the newly downloaded file
@@ -281,7 +286,7 @@ installGo(){
 
 ## Download & install PowerShell 7.x
 installPowShell(){
-	display_message "Downloading and Installing PowerShell 7.x..."
+	display_message " Downloading and Installing PowerShell 7.x..."
 	# Install pre-requisite packages.
 	sudo apt-get install -y wget
 	# Download the PowerShell package file
@@ -292,11 +297,11 @@ installPowShell(){
 	sudo apt-get install -f
 	# Delete the downloaded package file
 	rm powershell_7.4.6-1.deb_amd64.deb
-	echo -e "PowerShell Installation complete"
+	display_message " PowerShell Installation complete... "
 }
 ## Downloading & Installing the Rust programming language. 
 installRust(){
-	display_message "Downloading and Installing Rust..."
+	display_message " Downloading and Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	. "$HOME/.cargo/env" 
 }
