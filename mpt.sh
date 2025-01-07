@@ -556,7 +556,7 @@ setPort(){
 	case $x in
 		y )
 			read -p 'Enter port number :' p;
-			sudo sed -i "/#PortNumber 22/PortNumber $p/" /etc/ssh/sshd_config;
+			sudo sed -i "/#Port 22/Port $p/" /etc/ssh/sshd_config;
 			;;
 		n )
 			;;
