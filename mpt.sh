@@ -268,7 +268,7 @@ createDirs(){
 ## Download , Install , & configure The GoLang programming Language. 
 installGo(){
 	## Pull Go directly from the site
-	curl -O https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+	wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 	## Remove any previous versions of Go and extracts the newly downloaded file
 	sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 	export PATH=$PATH:/usr/local/go/bin
@@ -317,7 +317,26 @@ installTools(){
 	## Install Programming Languages
 	installPowShell
 	installRust
-	#installGo
+	installGo
+}
+## function for installing pulled tools
+#
+# Function for installing moonWalk , the system wiper.
+installMoon() {
+	cd $HOME/Tools/
+	display_message "Installing MoonWalk system wiper...."
+	git clone https://github.com/mufeedvh/moonwalk.git
+	cd $HOME/Tools/moonwalk/
+	cargo build --release
+	cd $HOME/Tools/
+}
+installRFlow() {
+	cd $HOME/Tools/
+	display_message "Installing ReconFlow Recon Automation Framework...."
+	git clone https://github.com/six2dez/reconftw
+	cd $HOME/Tools/reconftw/
+	./install.sh
+	cd $HOME/Tools
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
@@ -329,7 +348,7 @@ pullTools(){
   "
 	display_message "$msg1"
 	mkdir $HOME/Tools
-	cd $HOME/Tools
+	cd $HOME/Tools/
 	## Cloning From public GitHub
 	display_message 'Grabbing P.E.A.S..'
 	git clone https://github.com/peass-ng/PEASS-ng.git
@@ -349,17 +368,10 @@ pullTools(){
 	git clone git clone https://github.com/Viralmaniar/Powershell-RAT
 	#
 	## save installing C2s,moonwalk,& ReconFlow for last
-	display_message "Installing MoonWalk system wiper"
-	git clone https://github.com/mufeedvh/moonwalk.git
-	cd moonwalk/
-	cargo build --release
-	cd ../
-	display_message "Installing ReconFlow Recon Automation Framework"
-	git clone https://github.com/six2dez/reconftw
-	cd reconftw/
-	./install.sh
-	cd ../
 	#
+	#
+	installMoon
+	installRFlow
 	display_message "Installing Sliver C2"
 	# curl https://sliver.sh/install|sudo bash
 
@@ -599,7 +611,7 @@ main(){
 }
 ## Start function to begin the script
 start() {
-	welcome
+	welcome		# Displays welcome banner
 	read -p "Enter Project name " projectName
 
 	if [ -z "$projectName" ]; then
