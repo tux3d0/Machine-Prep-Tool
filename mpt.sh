@@ -385,9 +385,9 @@ pullTools(){
 	#
 	#
 	installMoon
-	#nstallRFlow
+	nstallRFlow
 	display_message "Installing Sliver C2"
-	wget https://sliver.sh/install|sudo bash
+	wget https://sliver.sh/install && chmod +x install && sudo ./install && mv install installSliver
 	display_message "Sliver Installation Complete"
 
 }
