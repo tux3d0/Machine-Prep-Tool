@@ -403,10 +403,11 @@ termLog(){
 	#### Customize bash prompt - add Date & Time stamp
 	echo 'export PS1="-[\[$(tput sgr0)\]\[\033[38;5;10m\]\d\[$(tput sgr0)\]-\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]]-[\[$(tput sgr0)\]\[\033[38;5;214m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;196m\]\h\[$(tput sgr0)\]]-\n-[\[$(tput sgr0)\]\[\033[38;5;33m\]\w\[$(tput sgr0)\]]\\$ \[$(tput sgr0)\]"' >> ~/.bashrc
 	local x="$timestamp"_"$projectName.log"
-	display_message "
-	Starting to log all commands entered into this terminal session....
+	local msg2="
+   Starting to log all commands entered into this terminal session....
 	$(script $HOME/Projects/$projectName/Logs/$x)
 	"
+	display_message "$msg2"
 }
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
@@ -422,7 +423,7 @@ disableRoot(){
 
 	# Disable SSH root login
 	display_message 'Disabling Root SSH login...'
-	sudo sed -i "s/#PermitRootLogin */PermitRootLogin no/" /etc/ssh/sshd_config
+	sudo sed -i "s/^#PermitRootLogin $(*)/PermitRootLogin no/" /etc/ssh/sshd_config
 	sudo systemctl restart sshd || sudo service restart ssh
 
 	# Restrict root access via PAM
