@@ -386,7 +386,7 @@ pullTools(){
 	#
 	installMoon
 	installRFlow
-	display_message "Installing Sliver C2"
+	#display_message "Installing Sliver C2"
 	# curl https://sliver.sh/install|sudo bash
 
 }
@@ -518,7 +518,7 @@ disablePswd(){
   "
 	# Disable SSH password authentication login
 	echo 'Disabling password authentication...'
-	sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+	sudo sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
 	echo 'Restarting SSH service....'
 	sudo systemctl restart sshd || sudo service restart ssh
 }
@@ -635,7 +635,7 @@ hardenSSH(){
 	display_message "$msg"
 	sudo sed -i "s/#LogLevel INFO/LogLevel INFO/" /etc/ssh/sshd_config
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
-	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
+	sudo sed -i "s/^#PubkeyAuthentication yes/PubkeyAuthentication yes/" /etc/ssh/sshd_config
 	setPort
 	disRootMenu
 	sshKeysMenu
