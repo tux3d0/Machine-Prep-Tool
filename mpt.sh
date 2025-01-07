@@ -578,8 +578,17 @@ setPort(){
 	read x
 	case $x in
 		y )
-			read -p 'Enter port number :' p;
-			sudo sed -i "/#Port 22/Port $p/" /etc/ssh/sshd_config;
+			# Prompt the user for the new SSH port
+		read -p "Enter the new SSH port: " new_port
+
+		# Validate the input
+		if ! [[ "$p" =~ ^[0-9]+$ ]] || [ "$p" -le 0 ] || [ "$p" -gt 65535 ]; then
+			display_message "Invalid port number. Please enter a number between 1 and 65535."
+			exit 1
+		fi
+
+		# Update the SSH configuration file
+		sudo sed -i "s/^#Port 22/Port $p/" /etc/ssh/sshd_config
 			;;
 		n )
 			;;
