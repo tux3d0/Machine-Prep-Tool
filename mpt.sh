@@ -425,12 +425,14 @@ createSU(){
  ------------------------------Step 4.1a-----------------------------------
   Creating a Super User account before disabling the root account.
   "
+	display_message "$msg"
+	local x
 	read -p 'Enter username : ' supUser
-	sudo adduser "$supUser"
-	echo "Adding $supUser to sudoers group..."
-	sudo usermod -aG sudo "$supUser"
+	sudo adduser "$x"
+	echo "Adding $x to sudoers group..."
+	sudo usermod -aG sudo "$x"
 	# Ensure superuser can perform administrative tasks
-	echo "$supUser ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$supUser
+	echo "$x ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$x
 	display_message "Disabling root user account...."
 	disableRoot
 }
@@ -450,8 +452,25 @@ suMenu(){
 	esac
 }
 
+disRootMenu() {
+	local x
+	display_message "Would you like remote root SSH access enabled? y/N "
+	read x
+	case $x in
+		n )
+		echo 'root SSH will be disabled'; suMenu ;;
+		N)
+		echo 'root SSH will be disabled'; suMenu ;;
+		y )
+		echo 'root SSH will need to be self-configured'	;;
+		Y)
+		echo 'root SSH will be need to be self-configured'	;;
+		* ) echo 'root SSH will be disabled'; suMenu ;;
+	esac
+}
+
 ## Enable SSH 2FA 
-enable2fa(){
+enable2fa() {
 	local msg="
 
  -----------------------------Step 4.3-----------------------------------
@@ -512,9 +531,9 @@ genKeys(){
 	local x
 	echo -e '-------------------------------Step 4.4b------------------------------- \n'
 	echo -e "Starting to generate the SSH key pair... \n"
-	echo "SSH keys will be named "$projectName".pub & "$projectName
+	echo "SSH keys will be named $projectName.pub & $projectName"
 	read -p "Enter a comment to add to the keys :" x
-	ssh-keygen -t ed25519 -C '$(x)' -f $HOME'/.ssh/'$projectName
+	ssh-keygen -t ed25519 -C "$x" -f "$HOME/.ssh/$projectName"
 	ls -ln $HOME/.ssh/
 }
 ## SSH import or generate new key-pair menu
@@ -525,7 +544,7 @@ sshKeysMenu(){
 
 	case $x in
 		'y' ) echo "Importing SSH Keys...";  importKeys;;
-		'n' ) echo 'Generating the SSH Key Pair for '$USER; genKeys;;
+		'n' ) echo "Generating the SSH Key Pair for $USER"; genKeys;;
 	esac
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
@@ -559,6 +578,17 @@ setPort(){
 		echo '2FA SSH security will be enabled'; enable2fa;;
 	esac
 }
+## Displays menu asking if you want to disable pasword auth via SSH
+disPswdMenu() {
+	## menu for disabling password auth or leaving it enabled with key-based 
+	local p
+	read -p "Would you like to disable password authentication ?....y/n :" p
+	case $p in
+		y ) disablePswd;;
+		n ) echo "Leaving password enabled + key based authentication......";;
+	esac
+}
+
 hardenSSH(){
 	clear
 	local msg="
@@ -574,31 +604,11 @@ hardenSSH(){
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
 	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
 	setPort
-	local enableRoot
-	read -p "Would you like remote root SSH access enabled? y/N " enableRoot 
-	case $enableRoot in
-		n )
-		echo 'root SSH will be disabled'; suMenu ;;
-		N)
-		echo 'root SSH will be disabled'; suMenu ;;
-		y )
-		echo 'root SSH will need to be self-configured'	;;
-		Y)
-		echo 'root SSH will be need to be self-configured'	;;
-		* ) echo 'root SSH will be disabled'; suMenu ;;
-	esac
-
-	##calls the menu for generating or importing ssh keys
+	disRootMenu
 	sshKeysMenu
 	2faMenu
-## menu for disabling password auth or leaving it enabled with key-based 
-	local p
-	read -p "Would you like to disable password authentication ?....y/n :" p
-	case $p in
-		y ) disablePswd;;
-		n ) echo "Leaving password enabled + key based authentication......";;
-	esac
-	display_message "Restarting ssh service...."
+	disPswdMenu
+	display_message "SSH Hardening Complete....Restarting SSH service...."
 	sudo service restart ssh || sudo systemctl restart sshd
 }
 ## Welcome Message function
