@@ -336,7 +336,7 @@ installRFlow() {
 	git clone https://github.com/six2dez/reconftw
 	cd $HOME/Tools/reconftw/
 	./install.sh
-	cd $HOME/Tools
+	cd $HOME/Tools/
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
