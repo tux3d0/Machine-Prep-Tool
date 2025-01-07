@@ -65,13 +65,13 @@ display_message() {
 ## Step 1 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
+	mkdir -p "$backup_dir"
 	local msg="
  -------------------------------Step 1-------------------------------
   Creating backup copies of important system files and storing them in :
 	 $backup_dir
 	 "
 	display_message "$msg"
-	mkdir -p "$backup_dir"
 	sudo cp /etc/ssh/sshd_config "$backup_dir/sshd_config.bak"
 	# Backup the PAM configuration file
 	sudo cp /etc/pam.d/sshd "$backup_dir/pam.d/sshd.bak"
