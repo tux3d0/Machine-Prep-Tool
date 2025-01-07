@@ -6,7 +6,6 @@ gcc
 ufw
 nodejs
 bundler 
-resolvconf
 python3
 python3-django 
 python3-flask 
