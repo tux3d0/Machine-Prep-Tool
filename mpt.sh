@@ -52,19 +52,8 @@
 #set -o ignoreeof # Exit on error
 #set -o notify # Exit on error
 #==============================================================================
-clear
-printf "
-################################################
-#                                              #
-#                     Tuxnix                   #
-#                    Red Team                  #
-#               Machine Prep Tool              #
-#                      v0.1                    #
-#                                              #
-################################################
-"
-echo -e "This script will automate the setup of a pen-testing machine on a Debian-based system. \n"
-echo -e " ***Your sudo password will be needed at points of this script*** \n"
+
+
 #============================function definitions==============================
 # 	**Note: Needs better orginization!
 # Adds a border around a message for better readability 
@@ -536,7 +525,7 @@ hardenSSH(){
 	Disabling root SSH login
 	Enabling Pubkey based Authentication
 	"
-	display_message $msg
+	display_message "$msg"
 	sudo sed -i "s/#LogLevel INFO/LogLevel INFO/" /etc/ssh/sshd_config
 	sudo sed -i "s/#MaxSessions 10/MaxSessions 5/" /etc/ssh/sshd_config
 	sudo sed -i "s/#PubkeyAuthentication */PubkeyAuthentication yes/" /etc/ssh/sshd_config
@@ -579,6 +568,22 @@ hardenSSH(){
 	echo 'Restarting ssh service....'
 	sudo service restart ssh || sudo systemctl restart sshd
 }
+## Welcome Message function
+welcome() {
+	clear
+	local msg=" 
+
+                     Tuxnix                   
+                    Red Team                  
+               Machine Prep Tool              
+                      v0.1                    
+
+This script will automate the setup of a pen-testing machine on a Debian-based system. 
+***Your sudo password will be needed at points of this script*** 
+
+	"
+	display_message "$msg"
+}
 ## Main function to call all other functions
 main(){
 	backupSystemFiles	# Call to function to backup system files before making changes
@@ -591,7 +596,7 @@ main(){
 }
 ## Start function to begin the script
 start() {
-	echo " "
+	welcome
 	read -p "Enter Project name " projectName
 
 	if [ -z "$projectName" ]; then
