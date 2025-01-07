@@ -150,17 +150,23 @@ osDirs(){
 	mkdir $HOME/Projects/$projectName/macOS/Post-Exploitation
 	echo 'Creating the '$HOME/Projects/$projectName/macOS/'Lateral-Movement directory'
 	mkdir $HOME/Projects/$projectName/macOS/Lateral-Movement
+	echo 'Creating the '$HOME/Projects/$projectName/Connect 'directory'
+	mkdir $HOME/Projects/$projectName/Connect
 	local msg2="
 	The $projectName Folder structure is complete
 	$HOME/Projects/$projectName
-	ls -ln $HOME/Projects/$projectName
+	$(ls -ln $HOME/Projects/$projectName)
 	"
 	display_message "$msg2"
 }
 ## Create Dir structures organized primarily by Penetration Test type
 penDirs(){
-	echo -e ' Organizing the project directory structure by Penetration Test type \n'
-	echo -e ' *All folder structures currently, will be started in the current $HOME/Projects directory. \n'
+	local msg="
+	Organizing the project directory structure by OS type
+	*All folder structures currently, will be started in the current $HOME/Projects directory.
+	"
+	display_message "$msg"
+	##creating the dir structure
 	echo 'Creating the '$HOME/Projects/$projectName 'directory'
 	mkdir -p $HOME/Projects/$projectName
 	echo 'Creating the '$HOME/Projects/$projectName/'Pre-Engagement  directory'
@@ -241,11 +247,14 @@ penDirs(){
 	mkdir $HOME/Projects/$projectName/Results
 	echo 'Creating the '$HOME/Projects/$projectName/Logs 'directory'
 	mkdir $HOME/Projects/$projectName/Logs
-	echo -e '\n'
-	echo 'The '$projectName' Folder structure is complete'
-	echo $HOME/Projects/$projectName
-	ls -ln $HOME/Projects/$projectName
-	echo -e 'Moving onto creating your project directory structure.... \n'
+	echo 'Creating the '$HOME/Projects/$projectName/Connect 'directory'
+	mkdir $HOME/Projects/$projectName/Connect
+	local msg2="
+	The $projectName Folder structure is complete
+	$HOME/Projects/$projectName
+	$(ls -ln $HOME/Projects/$projectName)
+	"
+	display_message "$msg2"
 }
 ## Menu function for the directory structure builder
 createDirs(){
