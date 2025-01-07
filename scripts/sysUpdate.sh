@@ -1,6 +1,22 @@
 #!/bin/bash
-# This script is used to update the system and bring everything current before installing tools
-
+#===============================================================================
+#
+#          FILE: sysUpdate.sh
+# 
+#         USAGE: ./scripts/sysUpdate.sh
+# 
+#   DESCRIPTION: A quick script to run apt update & upgrade and clean up the system in a one-liner. 
+# 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Tuxnix
+#  ORGANIZATION: ---
+#       CREATED: $(date +%Y-%m-%d)
+#      REVISION: ---
+#===============================================================================
+#
 # Function to display a message with a border
 display_message() {
     local message=$1
