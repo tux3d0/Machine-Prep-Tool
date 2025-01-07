@@ -573,13 +573,13 @@ welcome() {
 	clear
 	local msg=" 
 
-                     Tuxnix                   
-                    Red Team                  
-               Machine Prep Tool              
-                      v0.1                    
+                     			 Tuxnix                   
+                    			Red Team                  
+               			    Machine Prep Tool              
+                      			  v0.1                    
 
   This script will automate the setup of a pen-testing machine on a Debian-based system. 
-  
+
   ***Your sudo password will be needed at points of this script*** 
 
 	"
