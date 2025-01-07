@@ -579,7 +579,7 @@ setPort(){
 	case $x in
 		y )
 			# Prompt the user for the new SSH port
-		read -p "Enter the new SSH port: " new_port
+		read -p "Enter the new SSH port: " p
 
 		# Validate the input
 		if ! [[ "$p" =~ ^[0-9]+$ ]] || [ "$p" -le 0 ] || [ "$p" -gt 65535 ]; then
