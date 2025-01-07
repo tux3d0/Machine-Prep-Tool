@@ -9,3 +9,4 @@ vim
 tmux
 openvpn
 openssl
+libpam-google-authenticator 
