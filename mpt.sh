@@ -65,7 +65,7 @@ display_message() {
 ## Step 1 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
-	mkdir -p "$backup_dir"
+	mkdir -p "$backup_dir/pam.d"
 	local msg="
  -------------------------------Step 1-------------------------------
   Creating backup copies of important system files and storing them in :
@@ -427,10 +427,10 @@ createSU(){
   "
 	display_message "$msg"
 	local x
-	read -p 'Enter username : ' supUser
-	sudo adduser "$x"
+	read -p 'Enter username : ' x
+	sudo adduser $x
 	echo "Adding $x to sudoers group..."
-	sudo usermod -aG sudo "$x"
+	sudo usermod -aG sudo $x
 	# Ensure superuser can perform administrative tasks
 	echo "$x ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/$x
 	display_message "Disabling root user account...."
