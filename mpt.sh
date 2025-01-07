@@ -73,6 +73,8 @@ backupSystemFiles() {
 	display_message "$msg"
 	mkdir -p "$backup_dir"
 	sudo cp /etc/ssh/sshd_config "$backup_dir/sshd_config.bak"
+	# Backup the PAM configuration file
+	sudo cp /etc/pam.d/sshd "$backup_dir/pam.d/sshd.bak"
 	sudo cp /etc/passwd "$backup_dir/passwd.bak"
 	sudo cp /etc/group "$backup_dir/group.bak"
 	sudo cp /etc/shadow "$backup_dir/shadow.bak"
