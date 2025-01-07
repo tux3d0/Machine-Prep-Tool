@@ -343,6 +343,7 @@ installMoon() {
 	cd $HOME/Tools/moonwalk/
 	cargo build --release
 	cd $HOME/Tools/
+	moonwalk start 
 }
 installRFTW() {
 	cd $HOME/Tools/
