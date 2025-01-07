@@ -458,9 +458,24 @@ enable2factor(){
   Un-commenting and enabling 2FA/PAM settings in your sshd_config file...
   "
 	display_message "$msg"
-	sudo sed -i "s/#KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config || sudo sed -i "s/KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/" /etc/ssh/sshd_config
-	sudo sed -i "s/UsePAM no/UsePAM yes/" /etc/ssh/sshd_config
-	sudo sed -i "s/#GSSAPIAuthentication no/GSSAPIAuthentication yes/" /etc/ssh/sshd_config
+	sudo apt-get update
+	sudo apt-get install libpam-google-authenticator -y
+	# Configure Google Authenticator for the current user
+	google-authenticator -t -d -f -r 3 -R 30 -w 3
+
+	# Backup the SSH configuration file
+	sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+	# Enable ChallengeResponseAuthentication in SSH configuration
+	sudo sed -i 's/^#ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
+
+	# Add Google Authenticator to PAM configuration
+	echo "auth required pam_google_authenticator.so" | sudo tee -a /etc/pam.d/sshd
+
+	# Restart SSH service to apply changes
+	sudo systemctl restart sshd || sudo system restart ssh
+
+	display_message "2FA SSH authentication has been enabled using Google's Authenticator app."
 }
 ## Disables the ability to SSH in using only a password
 disablePswd(){
