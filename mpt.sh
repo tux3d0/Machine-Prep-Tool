@@ -534,38 +534,47 @@ import_ssh_key() {
 }
 importKeys(){
 	clear
-	echo -e '-------------------------------Step 4.4a------------------------------- \n'
-	display_message "SSH Key Importer"
+	local msg="
 
-	read -p "Enter the path to your SSH key: " key_path
+	-----------------------------------Step 4.4a-----------------------------------
+					
+									SSH Key Importer
+
+"
+	display_message "$msg"
+	read -p "Enter the path to your SSH key : " key_path
 	import_ssh_key "$key_path"
 }
 ## Function for generating new ED25519 SSH key pair storing it in default dir $HOME/.ssh/
 genKeys(){
 	local x
-	echo -e '-------------------------------Step 4.4b------------------------------- \n'
-	echo -e "Starting to generate the SSH key pair... \n"
-	echo "SSH keys will be named $projectName.pub & $projectName"
+	local msg="
+  -------------------------------Step 4.4b-------------------------------
+	Starting to generate the SSH key pair...
+	SSH keys will be named $projectName.pub & $projectName
+
+	"
+	display_message "$msg"
 	read -p "Enter a comment to add to the keys :" x
 	ssh-keygen -t ed25519 -C "$x" -f "$HOME/.ssh/$projectName"
 	ls -ln $HOME/.ssh/
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	echo -e '-------------------------------Step 4.4------------------------------- \n'
+	display_message "-------------------------------Step 4.4-------------------------------"
 	local x
-	read -p "Do you have pre-created SSH Keys to import? (y/n)" x
+	read -p "Do you have pre-created SSH Keys to import ?..... (y/n)" x
 
 	case $x in
-		'y' ) echo "Importing SSH Keys...";  importKeys;;
-		'n' ) echo "Generating the SSH Key Pair for $USER"; genKeys;;
+		'y' ) display_message "Importing SSH Keys...";  importKeys;;
+		'n' ) display_message "Generating the SSH Key Pair for $USER"; genKeys;;
 	esac
 }
 ## Parent SSH hardening function, calls on all other SSH related functions
 setPort(){
 	local x
 	local p
-	display_message "Would you like to change the SSH Listen port?....y/n"
+	display_message "Would you like to change the SSH Listen port ?....y/n"
 	read x
 	case $x in
 		y )
@@ -580,7 +589,7 @@ setPort(){
 2faMenu(){
     ## enable 2FA menu
 	local x
-	read -p "Would you like to enable 2FA SSH security ? y/N (default is disabled SSH - Pub/Priv keys will still be generated. )" x
+	read -p "Would you like to enable GOOGLE 2FA SSH security ?..... (y/n)" x
 	case $x in
 		n )
 		echo 'Leave Google 2FA disabled';;
@@ -598,8 +607,8 @@ disPswdMenu() {
 	local p
 	read -p "Would you like to disable password authentication ?....y/n :" p
 	case $p in
-		y ) disablePswd;;
-		n ) echo "Leaving password enabled + key based authentication......";;
+		y )display_message "Disabling password based authentication via SSH...."; disablePswd;;
+		n ) display_message "Leaving password enabled + key based authentication......";;
 	esac
 }
 
@@ -655,7 +664,7 @@ main(){
 ## Start function to begin the script
 start() {
 	welcome		# Displays welcome banner
-	read -p "Enter Project name " projectName
+	read -p "Enter Project name :" projectName
 
 	if [ -z "$projectName" ]; then
 		echo "The Project Name can't be left blank"
