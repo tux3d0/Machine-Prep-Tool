@@ -385,9 +385,10 @@ pullTools(){
 	#
 	#
 	installMoon
-	installRFlow
-	#display_message "Installing Sliver C2"
-	# curl https://sliver.sh/install|sudo bash
+	#nstallRFlow
+	display_message "Installing Sliver C2"
+	wget https://sliver.sh/install|sudo bash
+	display_message "Sliver Installation Complete"
 
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
