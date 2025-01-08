@@ -343,6 +343,7 @@ installTools(){
 	installPowShell
 	installRust
 	installGo
+	## Install BurpSuite & Metasploit Framework
 	addBurp
 	addMSF
 }
