@@ -324,7 +324,6 @@ addMSF(){
 	display_message " Downloading & Installing Metasploit Framework..."
 	curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod +x 755 msfinstall && ./msfinstall
 
-
 }
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
@@ -345,9 +344,16 @@ installTools(){
 	installRust
 	installGo
 	addBurp
+	addMSF
 }
 ## function for installing pulled tools
 #
+# Function for installing Sliver C2
+installSliver() {
+	display_message "Installing Sliver C2"
+	wget https://sliver.sh/install && chmod +x install && sudo ./install && mv install installSliver
+	display_message "Sliver Installation Complete"
+}
 # Function for installing moonWalk , the system wiper.
 installMoon() {
 	cd $HOME/Tools/
@@ -399,11 +405,8 @@ pullTools(){
 	#
 	#
 	installMoon
-	addMSF
 	installRFTW
-	display_message "Installing Sliver C2"
-	wget https://sliver.sh/install && chmod +x install && sudo ./install && mv install installSliver
-	display_message "Sliver Installation Complete"
+	installSliver
 
 }
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
