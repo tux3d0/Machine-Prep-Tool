@@ -408,6 +408,12 @@ termLog(){
 	local x="$timestamp"_"$projectName.log"
 	local msg2="Starting to log all commands entered into this terminal session...."
 	display_message "$msg2"
+	## For calculating script runtime
+	end_time=$SECONDS
+	runtime=$((end_time - start_time))
+	mins=$((runtime / 60))
+	echo -e "Sript completed in $mins minutes... \n"
+	## Logging all commands entered into the terminal
 	script $HOME/Projects/$projectName/Logs/$x
 }
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
@@ -686,8 +692,3 @@ start() {
 	fi
 }
 start
-## For calculating script runtime
-end_time=$SECONDS
-runtime=$((end_time - start_time))
-mins=$((runtime / 60))
-echo "Script completed in $mins minutes"
