@@ -1,5 +1,10 @@
 wget
 curl
+ca-certificates 
+apt-transport-https 
+software-properties-common 
+lsb-release 
+postgresql
 openssh-server
 git
 gcc
