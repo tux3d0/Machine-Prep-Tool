@@ -1,4 +1,3 @@
-burpsuite
 netcat
 ncat
 nmap
@@ -13,7 +12,6 @@ privoxy
 proxychains
 sqlmap
 radare2
-metasploit-framework
 spiderfoot
 theharvester
 remmina
