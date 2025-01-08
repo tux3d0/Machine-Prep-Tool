@@ -5,6 +5,7 @@ git
 gcc
 ufw
 nodejs
+npm
 bundler 
 python3
 python3-django 
