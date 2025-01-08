@@ -315,6 +315,17 @@ installRust(){
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	. "$HOME/.cargo/env" 
 }
+addBurp(){
+	display_message " Downloading & Installing BurpSuite Community Edition..."
+	wget https://portswigger.net/burp/releases/community/latest -O burp.sh
+	
+}
+addMSF(){
+	display_message " Downloading & Installing Metasploit Framework..."
+	curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod +x 755 msfinstall && ./msfinstall
+
+
+}
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	local msg1="
@@ -333,6 +344,7 @@ installTools(){
 	installPowShell
 	installRust
 	installGo
+	addBurp
 }
 ## function for installing pulled tools
 #
@@ -387,6 +399,7 @@ pullTools(){
 	#
 	#
 	installMoon
+	addMSF
 	installRFTW
 	display_message "Installing Sliver C2"
 	wget https://sliver.sh/install && chmod +x install && sudo ./install && mv install installSliver
