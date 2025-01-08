@@ -1,4 +1,5 @@
 #!/bin/bash
+start_time=$SECONDS
 #==============================================================================
 #
 #          FILE: mpt.sh
@@ -685,3 +686,8 @@ start() {
 	fi
 }
 start
+## For calculating script runtime
+end_time=$SECONDS
+runtime=$((end_time - start_time))
+mins=$((runtime / 60))
+echo "Script completed in $mins minutes"
