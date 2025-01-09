@@ -68,7 +68,7 @@ backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
 	mkdir -p "$backup_dir/pam.d"
 	local msg="
- -------------------------------Step 1-------------------------------
+ -------------------------------Step 2-------------------------------
   Creating backup copies of important system files and storing them in :
 	 $backup_dir
 	 "
@@ -88,7 +88,7 @@ backupSystemFiles() {
 # Step 2 of machine prep system updates
 updateSys() {
 	local msg1="
- ------------------------------Step 2-------------------------------
+ ------------------------------Step 1-------------------------------
   Bringing the system and all of its files up-to-date....
   "
 	display_message "$msg1"
@@ -101,7 +101,14 @@ updateSys() {
 	display_message "$msg2"
     xargs sudo apt install -y < reqs.list	# Install required packages from reqs.list
 }
-
+## Configure & enable UFW
+configFirewall() {
+	sudo ufw ALLOW $(setPort "$p")
+	echo $(setPort "$p")
+	##sudo ufw enable
+}
+############ Create Dir Structure Functions ############
+#
 ## Creates Dir structure organized primarily by O.S type
 osDirs(){
 	local msg="
@@ -278,7 +285,7 @@ createDirs(){
 		3) echo 'Exiting...'; exit 0;;
 	esac
 }
-
+######### End of Dir Structure Functions 
 ## Download , Install , & configure The GoLang programming Language. 
 installGo(){
 	display_message " Downloading and Installing GoLang..."
@@ -598,7 +605,7 @@ sshKeysMenu(){
 ## Parent SSH hardening function, calls on all other SSH related functions
 setPort(){
 	local x
-	local p
+	local p=$1
 	display_message "Would you like to change the SSH Listen port ?....y/n"
 	read x
 	case $x in
@@ -619,7 +626,7 @@ setPort(){
 			;;
 	esac
 }
-
+configFirewall
 2faMenu(){
     ## enable 2FA menu
 	local x
@@ -691,6 +698,7 @@ main(){
 	backupSystemFiles	# Call to function to backup system files before making changes
 	createDirs	# Call to function to create the project directory structure
 	hardenSSH	# Call to function to harden the SSH service & lock down the root account
+	configFirewall
 	installTools	# Call to function to install all the tools from the tools.list file
 	pullTools	# Call to function to pull all the tools from GitHub
 	termLog		# Call to function to enable terminal logging
