@@ -626,7 +626,7 @@ setPort(){
 			;;
 	esac
 }
-configFirewall
+#configFirewall
 2faMenu(){
     ## enable 2FA menu
 	local x
