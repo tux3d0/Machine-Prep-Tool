@@ -629,6 +629,7 @@ setPort(){
 
 		# Update the SSH configuration file
 		sudo sed -i "s/^#Port 22/Port $p/" /etc/ssh/sshd_config
+		echo $p
 			;;
 		n )
 			;;
