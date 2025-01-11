@@ -64,12 +64,12 @@ display_message() {
     local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
-## Step 1 of Machine Prep....Backup system files before making changes
+## Stage 1 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
 	mkdir -p "$backup_dir/pam.d"
 	local msg="
- ----------------------------------- Step 2 -----------------------------------
+ ----------------------------------- Stage 2 -----------------------------------
   Creating backup copies of important system files and storing them in :
 	 $backup_dir
 	 "
@@ -86,10 +86,10 @@ backupSystemFiles() {
 	cp ~/.bashrc "$backup_dir/bashrc.bak"
 	echo "Backup completed. Files are stored in $backup_dir"
 }
-# Step 2 of machine prep system updates
+# Stage 2 of machine prep system updates
 updateSys() {
 	local msg1="
- ----------------------------------- Step 1 -----------------------------------
+ ----------------------------------- Stage 1 -----------------------------------
   Bringing the system and all of its files up-to-date....
   "
 	display_message "$msg1"
@@ -264,7 +264,7 @@ penDirs(){
 createDirs(){
 	local x
 	local msg="
-	-------------------------------Step 3-------------------------------
+	-------------------------------Stage 3-------------------------------
 
 			Would you like to organize the project by 
 				1) Operating System 
@@ -339,7 +339,7 @@ addMSF(){
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	local msg1="
- ----------------------------------- Step 5 -----------------------------------
+ ----------------------------------- Stage 6 -----------------------------------
   Installing Tools from your APT tools.list, Now's a good time to refill the coffee cup...
   "
 	display_message "$msg1"
@@ -389,7 +389,7 @@ installRFTW() {
 pullTools(){
 	## Cloning From public GitHub
 	local msg1=" 
------------------------------------ Step 5.1 -----------------------------------
+----------------------------------- Stage 6.1 -----------------------------------
   Grabbing Tools from GitHub Repos, you will still need to build some of these packages...
   Creating $(HOME)/Tools
   "
@@ -423,14 +423,14 @@ pullTools(){
 
 }
 #
-########### End of functions for installing pulled tools ##############
+########### End of functions for installing tools ##############
 #
 #
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 termLog(){
 	local timestamp=$(date +%s)
 	local msg="
------------------------------------ Step 7 -----------------------------------
+----------------------------------- Stage 7 -----------------------------------
   Enabling Terminal logging, commands entered will be stored in a log file with timestamps.
   Useful for Proof of Concepts and other reporting and liability aspects 
   Adding a Date & Timestamp to your terminal.....
@@ -449,10 +449,13 @@ termLog(){
 	## Logging all commands entered into the terminal
 	script $HOME/Projects/$projectName/Logs/$x
 }
+#
+############ Harden SSH Functions ##############
+#
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
 	local msg1="
- ----------------------------------- Step 4.2 -----------------------------------
+ ----------------------------------- Stage 4.2 -----------------------------------
   Disabling SSH access & Restricting TTY access and locking down PAM for the root user.
   "
 	display_message "$msg1"
@@ -477,7 +480,7 @@ disableRoot(){
 ## Create a super user account before disabling root account
 createSU(){
 	local msg="
- ----------------------------------- Step 4.1a -----------------------------------
+ ----------------------------------- Stage 4.1a -----------------------------------
   Creating a Super User account before disabling the root account.
   "
 	display_message "$msg"
@@ -495,7 +498,7 @@ createSU(){
 suMenu(){
 	local x
 	local msg="
- ----------------------------------- Step 4.1 -----------------------------------
+ ----------------------------------- Stage 4.1 -----------------------------------
   Have you already created a superuser account?..... y/n :
   "
 	display_message "$msg"
@@ -528,7 +531,7 @@ disRootMenu() {
 enable2fa() {
 	local msg="
 
- ----------------------------------- Step 4.3 -----------------------------------
+ ----------------------------------- Stage 4.3 -----------------------------------
   Enable 2FA SSH security using the Google API & Google Authenticator App
   Un-commenting and enabling 2FA/PAM settings in your sshd_config file...
 
@@ -553,7 +556,7 @@ enable2fa() {
 ## Disables the ability to SSH in using only a password
 disablePswd(){
 	local msg1="
- ----------------------------------- Step 4.5 -----------------------------------
+ ----------------------------------- Stage 4.5 -----------------------------------
   Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled...
   "
 	# Disable SSH password authentication login
@@ -577,7 +580,7 @@ importKeys(){
 	clear
 	local msg="
 
-	----------------------------------- Step 4.4a -----------------------------------
+	----------------------------------- Stage 4.4a -----------------------------------
 					
 									SSH Key Importer
 
@@ -590,7 +593,7 @@ importKeys(){
 genKeys(){
 	local x
 	local msg="
-  ----------------------------------- Step 4.4b -----------------------------------
+  ----------------------------------- Stage 4.4b -----------------------------------
 	Starting to generate the SSH key pair...
 	SSH keys will be named $projectName.pub & $projectName
 
@@ -602,7 +605,7 @@ genKeys(){
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	display_message "----------------------------------- Step 4.4 -----------------------------------"
+	display_message "----------------------------------- Stage 4.4 -----------------------------------"
 	local x
 	read -p "Do you have pre-created SSH Keys to import ?..... (y/n)" x
 
@@ -666,13 +669,13 @@ disPswdMenu() {
 ### Function for configuring the firewall
 configFirewall(){
 	local msg="
- ----------------------------------- Step 6 -----------------------------------
+ ----------------------------------- Stage 5 -----------------------------------
   Configuring the firewall to allow SSH connections on the new port.
   "
 	display_message "$msg"
 	echo "Allowing SSH connections on port $ssh_Port..."
 	sudo ufw allow $ssh_Port/tcp
-	sudo ufw allow "'snmp'"
+	sudo ufw allow "snmp"
 	#sudo ufw enable
 }
 #
@@ -680,7 +683,7 @@ configFirewall(){
 hardenSSH(){
 	clear
 	local msg="
-	----------------------------------- Step 4 -----------------------------------
+	----------------------------------- Stage 4 -----------------------------------
 	Beginning to harden your machines SSH....
 	Enabling SSH logging and setting log level to INFO
 	Setting Max Sessions to 5
@@ -699,6 +702,9 @@ hardenSSH(){
 	display_message "SSH Hardening Complete....Restarting SSH service...."
 	sudo service restart ssh || sudo systemctl restart sshd
 }
+#
+########### End of Harden SSH Functions ##############
+#
 ## Welcome Message function
 welcome() {
 	clear
