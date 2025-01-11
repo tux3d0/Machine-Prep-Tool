@@ -613,29 +613,29 @@ sshKeysMenu(){
 ## Parent SSH hardening function, calls on all other SSH related functions
 setPort(){
 	local x
-	local p=$1
+	 ssh_Port=$1
 	display_message "Would you like to change the SSH Listen port ?....y/n"
 	read x
 	case $x in
 		y )
 			# Prompt the user for the new SSH port
-		read -p "Enter the new SSH port: " p
+		read -p "Enter the new SSH port: " ssh_Port
 
 		# Validate the input
-		if ! [[ "$p" =~ ^[0-9]+$ ]] || [ "$p" -le 0 ] || [ "$p" -gt 65535 ]; then
+		if ! [[ "$ssh_Port" =~ ^[0-9]+$ ]] || [ "$ssh_Port" -le 0 ] || [ "$ssh_Port" -gt 65535 ]; then
 			display_message "Invalid port number. Please enter a number between 1 and 65535."
 			exit 1
 		fi
 
 		# Update the SSH configuration file
-		sudo sed -i "s/^#Port 22/Port $p/" /etc/ssh/sshd_config
-		echo $p
+		sudo sed -i "s/^#Port 22/Port $ssh_Port/" /etc/ssh/sshd_config
+		echo $ssh_Port
 			;;
 		n )
 			;;
 	esac
 }
-#configFirewall
+## Displays menu asking if you want to enable 2FA
 2faMenu(){
     ## enable 2FA menu
 	local x
@@ -669,9 +669,9 @@ configFirewall(){
   Configuring the firewall to allow SSH connections on the new port.
   "
 	display_message "$msg"
-	local sshPort=$(setPort)
-	echo "Allowing SSH connections on port $sshPort..."
-	sudo ufw allow "$sshPort/tcp"
+	echo "Allowing SSH connections on port $ssh_Port..."
+	sudo ufw allow $ssh_Port/tcp
+	sudo ufw allow "'snmp'"
 	#sudo ufw enable
 }
 #
