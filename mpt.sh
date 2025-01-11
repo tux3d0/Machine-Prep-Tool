@@ -383,6 +383,7 @@ installRFTW() {
 	cd $HOME/Tools/reconftw/
 	./install.sh
 	cd $HOME/Tools/
+	go install -v github.com/Brosck/mantra@latest		## Install the Mantra tool...temp work around until reconFTW issue is resolved.
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
