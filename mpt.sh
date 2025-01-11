@@ -675,7 +675,10 @@ configFirewall(){
 	display_message "$msg"
 	echo "Allowing SSH connections on port $ssh_Port..."
 	sudo ufw allow $ssh_Port/tcp
+	echo "Allowing SNMP connections..."
 	sudo ufw allow "snmp"
+	echo "Allowing HTTP/HTTPS connections..."
+	sudo ufw allow "Apache Full"
 	#sudo ufw enable
 }
 #
