@@ -21,6 +21,7 @@ start_time=$SECONDS
 #      REVISION: 
 #
 #==============================================================================
+#
 #set -o nounset                              # Treat unset variables as an error    
 #set -e # Exit on error 
 #set -x # Debugging on
@@ -63,12 +64,12 @@ display_message() {
     local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
-## Step 1 of Machine Prep....Backup system files before making changes
+## Stage 1 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
 	mkdir -p "$backup_dir/pam.d"
 	local msg="
- -------------------------------Step 2-------------------------------
+ ----------------------------------- Stage 2 -----------------------------------
   Creating backup copies of important system files and storing them in :
 	 $backup_dir
 	 "
@@ -85,10 +86,10 @@ backupSystemFiles() {
 	cp ~/.bashrc "$backup_dir/bashrc.bak"
 	echo "Backup completed. Files are stored in $backup_dir"
 }
-# Step 2 of machine prep system updates
+# Stage 2 of machine prep system updates
 updateSys() {
 	local msg1="
- ------------------------------Step 1-------------------------------
+ ----------------------------------- Stage 1 -----------------------------------
   Bringing the system and all of its files up-to-date....
   "
 	display_message "$msg1"
@@ -101,12 +102,7 @@ updateSys() {
 	display_message "$msg2"
     xargs sudo apt install -y < reqs.list	# Install required packages from reqs.list
 }
-## Configure & enable UFW
-configFirewall() {
-	sudo ufw ALLOW $(setPort "$p")
-	echo $(setPort "$p")
-	##sudo ufw enable
-}
+
 ############ Create Dir Structure Functions ############
 #
 ## Creates Dir structure organized primarily by O.S type
@@ -268,7 +264,7 @@ penDirs(){
 createDirs(){
 	local x
 	local msg="
--------------------------------Step 3-------------------------------
+	-------------------------------Stage 3-------------------------------
 
 			Would you like to organize the project by 
 				1) Operating System 
@@ -285,8 +281,11 @@ createDirs(){
 		3) echo 'Exiting...'; exit 0;;
 	esac
 }
-######### End of Dir Structure Functions 
-## Download , Install , & configure The GoLang programming Language. 
+######### End of Dir Structure Functions
+#
+############# Install & configure Programming Languages ############# 
+#
+## Download , Install , & configure GoLang.
 installGo(){
 	display_message " Downloading and Installing GoLang..."
 	## Pull Go directly from the site
@@ -300,7 +299,7 @@ installGo(){
 	## prints Go version to confirm installation
 	go version
 }
-
+#
 ## Download & install PowerShell 7.x
 installPowShell(){
 	display_message " Downloading and Installing PowerShell 7.x..."
@@ -322,6 +321,11 @@ installRust(){
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	. "$HOME/.cargo/env" 
 }
+#
+############# End of Install Programming Languages Functions ############# 
+#
+############ Functions for adding tools to the system & Pulling from GitHub ############
+#
 addBurp(){
 	display_message " Downloading & Installing BurpSuite Community Edition..."
 	wget https://portswigger.net/burp/releases/community/latest -O burp.sh
@@ -335,7 +339,7 @@ addMSF(){
 ## automatically installs tools from the tools.list file that will be needed for this project
 installTools(){
 	local msg1="
- -------------------------------Step 5-------------------------------
+ ----------------------------------- Stage 6 -----------------------------------
   Installing Tools from your APT tools.list, Now's a good time to refill the coffee cup...
   "
 	display_message "$msg1"
@@ -354,7 +358,7 @@ installTools(){
 	addBurp
 	addMSF
 }
-## function for installing pulled tools
+########### function for installing pulled tools ##############
 #
 # Function for installing Sliver C2
 installSliver() {
@@ -379,12 +383,13 @@ installRFTW() {
 	cd $HOME/Tools/reconftw/
 	./install.sh
 	cd $HOME/Tools/
+	go install -v github.com/Brosck/mantra@latest		## Install the Mantra tool...temp work around until reconFTW issue is resolved.
 }
 ## Clones Repos from GitHub & installs python modules
 pullTools(){
 	## Cloning From public GitHub
 	local msg1=" 
- -------------------------------Step 5.1-----------------------------------
+----------------------------------- Stage 6.1 -----------------------------------
   Grabbing Tools from GitHub Repos, you will still need to build some of these packages...
   Creating $(HOME)/Tools
   "
@@ -417,11 +422,15 @@ pullTools(){
 	installSliver
 
 }
+#
+########### End of functions for installing tools ##############
+#
+#
 ## Adds Date & Timestamp to your terminal sessions for logging purposes
 termLog(){
 	local timestamp=$(date +%s)
 	local msg="
- ------------------------------Step 6-----------------------------------
+----------------------------------- Stage 7 -----------------------------------
   Enabling Terminal logging, commands entered will be stored in a log file with timestamps.
   Useful for Proof of Concepts and other reporting and liability aspects 
   Adding a Date & Timestamp to your terminal.....
@@ -440,10 +449,13 @@ termLog(){
 	## Logging all commands entered into the terminal
 	script $HOME/Projects/$projectName/Logs/$x
 }
+#
+############ Harden SSH Functions ##############
+#
 ## Disable remote root account access, locking password, and creating a securetty file and locking that down
 disableRoot(){
 	local msg1="
- ------------------------------Step 4.2-----------------------------------
+ ----------------------------------- Stage 4.2 -----------------------------------
   Disabling SSH access & Restricting TTY access and locking down PAM for the root user.
   "
 	display_message "$msg1"
@@ -468,7 +480,7 @@ disableRoot(){
 ## Create a super user account before disabling root account
 createSU(){
 	local msg="
- ------------------------------Step 4.1a-----------------------------------
+ ----------------------------------- Stage 4.1a -----------------------------------
   Creating a Super User account before disabling the root account.
   "
 	display_message "$msg"
@@ -486,7 +498,7 @@ createSU(){
 suMenu(){
 	local x
 	local msg="
- ------------------------------Step 4.1-----------------------------------
+ ----------------------------------- Stage 4.1 -----------------------------------
   Have you already created a superuser account?..... y/n :
   "
 	display_message "$msg"
@@ -519,7 +531,7 @@ disRootMenu() {
 enable2fa() {
 	local msg="
 
- -----------------------------Step 4.3-----------------------------------
+ ----------------------------------- Stage 4.3 -----------------------------------
   Enable 2FA SSH security using the Google API & Google Authenticator App
   Un-commenting and enabling 2FA/PAM settings in your sshd_config file...
 
@@ -544,7 +556,7 @@ enable2fa() {
 ## Disables the ability to SSH in using only a password
 disablePswd(){
 	local msg1="
- ------------------------------Step 4.5-----------------------------------
+ ----------------------------------- Stage 4.5 -----------------------------------
   Disabling the ability to sign-in to SSH via Password, Priv key will be needed to sign-in & 2FA method if enabled...
   "
 	# Disable SSH password authentication login
@@ -568,7 +580,7 @@ importKeys(){
 	clear
 	local msg="
 
-	-----------------------------------Step 4.4a-----------------------------------
+	----------------------------------- Stage 4.4a -----------------------------------
 					
 									SSH Key Importer
 
@@ -581,7 +593,7 @@ importKeys(){
 genKeys(){
 	local x
 	local msg="
-  -------------------------------Step 4.4b-------------------------------
+  ----------------------------------- Stage 4.4b -----------------------------------
 	Starting to generate the SSH key pair...
 	SSH keys will be named $projectName.pub & $projectName
 
@@ -593,7 +605,7 @@ genKeys(){
 }
 ## SSH import or generate new key-pair menu
 sshKeysMenu(){
-	display_message "-------------------------------Step 4.4-------------------------------"
+	display_message "----------------------------------- Stage 4.4 -----------------------------------"
 	local x
 	read -p "Do you have pre-created SSH Keys to import ?..... (y/n)" x
 
@@ -605,28 +617,29 @@ sshKeysMenu(){
 ## Parent SSH hardening function, calls on all other SSH related functions
 setPort(){
 	local x
-	local p=$1
+	 ssh_Port=$1
 	display_message "Would you like to change the SSH Listen port ?....y/n"
 	read x
 	case $x in
 		y )
 			# Prompt the user for the new SSH port
-		read -p "Enter the new SSH port: " p
+		read -p "Enter the new SSH port: " ssh_Port
 
 		# Validate the input
-		if ! [[ "$p" =~ ^[0-9]+$ ]] || [ "$p" -le 0 ] || [ "$p" -gt 65535 ]; then
+		if ! [[ "$ssh_Port" =~ ^[0-9]+$ ]] || [ "$ssh_Port" -le 0 ] || [ "$ssh_Port" -gt 65535 ]; then
 			display_message "Invalid port number. Please enter a number between 1 and 65535."
 			exit 1
 		fi
 
 		# Update the SSH configuration file
-		sudo sed -i "s/^#Port 22/Port $p/" /etc/ssh/sshd_config
+		sudo sed -i "s/^#Port 22/Port $ssh_Port/" /etc/ssh/sshd_config
+		echo $ssh_Port
 			;;
 		n )
 			;;
 	esac
 }
-#configFirewall
+## Displays menu asking if you want to enable 2FA
 2faMenu(){
     ## enable 2FA menu
 	local x
@@ -652,11 +665,28 @@ disPswdMenu() {
 		n ) display_message "Leaving password enabled + key based authentication......";;
 	esac
 }
-
+#
+### Function for configuring the firewall
+configFirewall(){
+	local msg="
+ ----------------------------------- Stage 5 -----------------------------------
+  Configuring the firewall to allow SSH connections on the new port.
+  "
+	display_message "$msg"
+	echo "Allowing SSH connections on port $ssh_Port..."
+	sudo ufw allow $ssh_Port/tcp
+	echo "Allowing SNMP connections..."
+	sudo ufw allow "snmp"
+	echo "Allowing HTTP/HTTPS connections..."
+	sudo ufw allow "Apache Full"
+	#sudo ufw enable
+}
+#
+### Function for calling other functions that hardern the machines SSH
 hardenSSH(){
 	clear
 	local msg="
-	------------------------------Step 4-----------------------------------
+	----------------------------------- Stage 4 -----------------------------------
 	Beginning to harden your machines SSH....
 	Enabling SSH logging and setting log level to INFO
 	Setting Max Sessions to 5
@@ -675,6 +705,9 @@ hardenSSH(){
 	display_message "SSH Hardening Complete....Restarting SSH service...."
 	sudo service restart ssh || sudo systemctl restart sshd
 }
+#
+########### End of Harden SSH Functions ##############
+#
 ## Welcome Message function
 welcome() {
 	clear
@@ -694,7 +727,7 @@ welcome() {
 }
 ## Main function to call all other functions
 main(){
-	updateSys	# Call to function to updates the system and install required packages from reqs.list
+	updateSys 	# Call to function to updates the system and install required packages from reqs.list
 	backupSystemFiles	# Call to function to backup system files before making changes
 	createDirs	# Call to function to create the project directory structure
 	hardenSSH	# Call to function to harden the SSH service & lock down the root account
