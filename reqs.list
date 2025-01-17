@@ -23,4 +23,5 @@ vim
 tmux
 openvpn
 openssl
-libpam-google-authenticator 
+libpam-google-authenticator
+tor
