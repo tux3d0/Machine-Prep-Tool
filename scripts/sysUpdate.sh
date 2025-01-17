@@ -26,6 +26,6 @@ display_message() {
 
 display_message " About to update the system and bring everything current before installing tools"
 
-echo -e 'sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
+echo -e 'sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean -y'
 
-display_message "System update complete"
+display_message "System Update & Cleaning Complete"

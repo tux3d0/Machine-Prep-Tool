@@ -58,13 +58,13 @@ start_time=$SECONDS
 
 #============================function definitions==============================
 # 	**Note: Needs better orginization!
-# Adds a border around a message for better readability 
+# Adds a border around a messages for better readability 
 display_message() {
     local message=$1
     local border="==============================================================================="
     echo -e "\n$border\n$message\n$border\n"
 }
-## Stage 1 of Machine Prep....Backup system files before making changes
+## Stage 2 of Machine Prep....Backup system files before making changes
 backupSystemFiles() {
 	local backup_dir="$HOME/system_backup_$(date +%Y%m%d_%H%M%S)"
 	mkdir -p "$backup_dir/pam.d"
@@ -86,7 +86,7 @@ backupSystemFiles() {
 	cp ~/.bashrc "$backup_dir/bashrc.bak"
 	echo "Backup completed. Files are stored in $backup_dir"
 }
-# Stage 2 of machine prep system updates
+# Stage 1 of machine prep system updates
 updateSys() {
 	local msg1="
  ----------------------------------- Stage 1 -----------------------------------
@@ -703,7 +703,7 @@ hardenSSH(){
 	2faMenu
 	disPswdMenu
 	display_message "SSH Hardening Complete....Restarting SSH service...."
-	sudo service restart ssh || sudo systemctl restart sshd
+	sudo service restart ssh || sudo systemctl restart ssh
 }
 #
 ########### End of Harden SSH Functions ##############
